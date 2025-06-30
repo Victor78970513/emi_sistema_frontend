@@ -3,6 +3,7 @@ import 'package:frontend_emi_sistema/core/router/routes.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/pages/admin_home_page.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/pages/docentes_page.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/pages/pending_accounts_page.dart';
+import 'package:frontend_emi_sistema/features/auth/presentation/pages/auth_checking_page.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/pages/web_login_page.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/pages/web_register_page.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_provider.dart';
@@ -18,15 +19,25 @@ class AppRouter {
   static final AppRouter _instance = AppRouter._privateConstructor();
 
   static final routerProvider = Provider<GoRouter>((ref) {
-    final authState = ref.watch(authProvider);
     return GoRouter(
       initialLocation: AppRoutes.loginPage,
       debugLogDiagnostics: true,
       redirect: (context, state) {
+        final authState = ref.watch(authProvider);
+        final bool isCheckingAuth =
+            authState is AuthInitial || authState is AuthLoading;
+        final isOnLogin = state.uri.path == AppRoutes.loginPage;
+        final isOnSplash = state.uri.path == AppRoutes.splash;
         try {
-          switch (authState) {
-            case AuthSuccess():
-              return AppRoutes.adminHomePage;
+          if (isOnSplash && isCheckingAuth) {
+            return null;
+          }
+          if (authState is! AuthSuccess && !isOnLogin) {
+            return AppRoutes.loginPage;
+          }
+
+          if (authState is AuthSuccess && isOnLogin) {
+            return AppRoutes.docentesPage;
           }
         } catch (e, stack) {
           print("ERROR: $e");
@@ -34,18 +45,15 @@ class AppRouter {
         }
         return null;
       },
-      // redirect: (context, state) {
-      //   final isAuthenticated = ref.read(isAuthenticatedProvider);
-      //   final rolUser = ref.read(authRoleProvider);
-      //   if (!isAuthenticated) {
-      //     return AppRoutes.loginPage;
-      //   }
-      //   if (rolUser == null) {
-      //     return AppRoutes.loginPage;
-      //   }
-      //   return null;
-      // },
       routes: [
+        // SPLASH
+        GoRoute(
+          path: AppRoutes.splash,
+          name: AppRoutes.splash,
+          builder: (context, state) {
+            return AuthCheckingPage();
+          },
+        ),
         //LOGIN PAGE
         GoRoute(
           path: AppRoutes.loginPage,

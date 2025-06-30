@@ -1,11 +1,12 @@
 class AppRoutes {
-  static final loginPage = '/';
+  static const String splash = '/';
+  static const String loginPage = '/login';
+  static const String registerPage = '/register';
 
-  static final registerPage = '/register';
+  // Shell
+  static const String adminShell = '/admin';
 
-  static final adminHomePage = '/admin/dashboard';
-
-  static final docentesPage = '$adminHomePage/docentes';
-
-  static final pendingAccountsPage = '$adminHomePage/pending-accounts';
+  // Admin routes
+  static const String docentesPage = '/admin/docentes';
+  static const String pendingAccountsPage = '/admin/pending-accounts';
 }

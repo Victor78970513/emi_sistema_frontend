@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend_emi_sistema/core/preferences/preferences.dart';
 import 'package:frontend_emi_sistema/core/router/router.dart';
 import 'package:frontend_emi_sistema/features/admin/data/datasource/pending_accounts_datasource.dart';
 import 'package:frontend_emi_sistema/features/admin/data/repositories/pending_accounts_repository_impl.dart';
@@ -10,6 +11,8 @@ import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_r
 import 'package:go_router/go_router.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Preferences().init();
   GoRouter.optionURLReflectsImperativeAPIs = true;
   runApp(
     ProviderScope(

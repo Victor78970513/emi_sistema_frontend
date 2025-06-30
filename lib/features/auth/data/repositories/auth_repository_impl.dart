@@ -45,4 +45,16 @@ class AuthRepositoryImpl implements AuthRepository {
       );
     }
   }
+
+  @override
+  Future<Either<Failure, User>> checkAuth({required String token}) async {
+    try {
+      final checkResponse = await authRemoteDatasource.checkAuth(token: token);
+      return right(checkResponse);
+    } catch (e) {
+      return left(
+        Failure(e.toString()),
+      );
+    }
+  }
 }

@@ -21,6 +21,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = AuthSuccess(user);
     });
   }
+
+  Future<void> checkAuth({required String token}) async {
+    final prefs = Preferences();
+    state = AuthLoading();
+    final response = await _authRepository.checkAuth(token: token);
+    response.fold(
+      (left) {
+        state = AuthError(left.message);
+      },
+      (user) {
+        prefs.userToken = user.token;
+        prefs.userRol = user.rol;
+        print("TOKEN: ${prefs.userToken}");
+        state = AuthSuccess(user);
+      },
+    );
+  }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {

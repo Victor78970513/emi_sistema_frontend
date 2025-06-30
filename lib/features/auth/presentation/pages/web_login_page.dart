@@ -19,13 +19,20 @@ class _WebLoginPageState extends ConsumerState<WebLoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final authState = ref.watch(authProvider);
     ref.listen(authProvider, (previous, next) {
       if (next is AuthSuccess) {
         if (next.user.rol == "admin") {
-          context.go(AppRoutes.docentesPage);
+          context.replace(AppRoutes.docentesPage);
         }
       }
       if (next is AuthError) {
