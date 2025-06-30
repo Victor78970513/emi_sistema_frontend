@@ -47,6 +47,18 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, bool>> logOut() async {
+    try {
+      final response = await authRemoteDatasource.logOut();
+      return (right(response));
+    } catch (e) {
+      return left(
+        Failure(e.toString()),
+      );
+    }
+  }
+
+  @override
   Future<Either<Failure, User>> checkAuth({required String token}) async {
     try {
       final checkResponse = await authRemoteDatasource.checkAuth(token: token);

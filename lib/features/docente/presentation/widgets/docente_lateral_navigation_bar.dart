@@ -5,15 +5,16 @@ import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_p
 import 'package:frontend_emi_sistema/shared/widgets/lateral_navigation_item.dart';
 import 'package:go_router/go_router.dart';
 
-class LateralNavigationBar extends ConsumerStatefulWidget {
-  const LateralNavigationBar({super.key});
+class DocenteLateralNavigationBar extends ConsumerStatefulWidget {
+  const DocenteLateralNavigationBar({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _LateralNavigationBarState();
+      _DocenteLateralNavigationBarState();
 }
 
-class _LateralNavigationBarState extends ConsumerState<LateralNavigationBar> {
+class _DocenteLateralNavigationBarState
+    extends ConsumerState<DocenteLateralNavigationBar> {
   bool isExpanded = false;
   @override
   Widget build(BuildContext context) {
@@ -39,26 +40,26 @@ class _LateralNavigationBarState extends ConsumerState<LateralNavigationBar> {
                         children: [
                           LateralNavigatorItem(
                             index: 0,
-                            title: "Docentes",
+                            title: "Informacion Personal",
                             icon: Icons.people,
-                            path: AppRoutes.docentesPage,
+                            path: AppRoutes.personalInfoPage,
                           ),
                           LateralNavigatorItem(
-                            title: "Solicitud de Registros",
+                            title: "Estudios",
                             icon: Icons.app_registration_outlined,
-                            path: AppRoutes.pendingAccountsPage,
+                            path: AppRoutes.studiesPage,
                             index: 1,
                           ),
                           LateralNavigatorItem(
                             title: "Asignaturas",
                             icon: Icons.subject_rounded,
-                            path: AppRoutes.pendingAccountsPage,
+                            path: AppRoutes.studiesPage,
                             index: 2,
                           ),
                           LateralNavigatorItem(
                             title: "Horarios",
                             icon: Icons.insert_chart_outlined,
-                            path: AppRoutes.pendingAccountsPage,
+                            path: AppRoutes.studiesPage,
                             index: 3,
                           ),
                           Spacer(),

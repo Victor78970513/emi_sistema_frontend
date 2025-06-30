@@ -34,6 +34,9 @@ class _WebLoginPageState extends ConsumerState<WebLoginPage> {
         if (next.user.rol == "admin") {
           context.replace(AppRoutes.docentesPage);
         }
+        if (next.user.rol == "docente") {
+          context.replace(AppRoutes.personalInfoPage);
+        }
       }
       if (next is AuthError) {
         print(next.message);

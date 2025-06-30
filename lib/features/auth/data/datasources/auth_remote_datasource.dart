@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:frontend_emi_sistema/core/error/exceptions.dart';
+import 'package:frontend_emi_sistema/core/preferences/preferences.dart';
 import 'package:frontend_emi_sistema/features/auth/data/models/user_model.dart';
 
 abstract interface class AuthRemoteDatasource {
@@ -15,6 +16,8 @@ abstract interface class AuthRemoteDatasource {
   });
   //
   Future<UserModel> checkAuth({required String token});
+  //
+  Future<bool> logOut();
 }
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
@@ -81,6 +84,24 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       print(e.toString());
       throw ServerException(
         "Error en el CheckLogin",
+      );
+    }
+  }
+
+  @override
+  Future<bool> logOut() async {
+    try {
+      final prefs = Preferences();
+      prefs.clear();
+      if (prefs.userToken.isEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e.toString());
+      throw ServerException(
+        "Error al cerrar sesion",
       );
     }
   }

@@ -8,6 +8,9 @@ import 'package:frontend_emi_sistema/features/auth/presentation/pages/aproval_pe
 import 'package:frontend_emi_sistema/features/auth/presentation/pages/auth_checking_page.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/pages/web_login_page.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/pages/web_register_page.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/pages/docente_home_page.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/pages/personal_info_page.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/pages/studies_page.dart';
 // import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_provider.dart';
 // import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_provider_state.dart';
 import 'package:go_router/go_router.dart';
@@ -123,6 +126,36 @@ class AppRouter {
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: PendingAccountsPage(),
+                );
+              },
+            ),
+          ],
+        ),
+
+        // DOCENTE VIEWS
+        ShellRoute(
+          builder: (context, state, child) {
+            return DocenteHomePage(child: child);
+          },
+          routes: [
+            // PERSONAL-INFO
+            GoRoute(
+              path: AppRoutes.personalInfoPage,
+              name: AppRoutes.personalInfoPage,
+              pageBuilder: (context, state) {
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: PersonalInfoPage(),
+                );
+              },
+            ),
+            GoRoute(
+              path: AppRoutes.studiesPage,
+              name: AppRoutes.studiesPage,
+              pageBuilder: (context, state) {
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: StudiesPage(),
                 );
               },
             ),

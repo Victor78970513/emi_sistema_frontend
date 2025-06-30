@@ -8,6 +8,9 @@ import 'package:frontend_emi_sistema/features/admin/presentation/providers/pendi
 import 'package:frontend_emi_sistema/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:frontend_emi_sistema/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_repository_provider.dart';
+import 'package:frontend_emi_sistema/features/docente/data/datasources/docente_datasource.dart';
+import 'package:frontend_emi_sistema/features/docente/data/repositories/docente_repository_impl.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_repository_provider.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
@@ -23,6 +26,10 @@ void main() {
         pendingAccountsRepositoryProvider.overrideWithValue(
           PendingAccountsRepositoryImpl(
               pendingAccountsDatasource: PendingAccountsDatasourceImpl()),
+        ),
+        docenteRepositoryProvider.overrideWithValue(
+          DocenteRepositoryImpl(
+              docenteDatasource: DocenteRemoteDatasourceImpl()),
         )
       ],
       child: const MyApp(),

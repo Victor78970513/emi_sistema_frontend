@@ -4,10 +4,17 @@ class AppRoutes {
   static const String registerPage = '/register';
   static const String aprovalPendingPage = '/approval-pending-page';
 
-  // Shell
+  // AdminShell
   static const String adminShell = '/admin';
 
   // Admin routes
   static const String docentesPage = '/admin/docentes';
   static const String pendingAccountsPage = '/admin/pending-accounts';
+
+  // DocenteShell
+  static const String docenteShell = '/docente';
+
+  // docente routes
+  static const String personalInfoPage = '/docente/personal-info';
+  static const String studiesPage = '/docente/studies';
 }

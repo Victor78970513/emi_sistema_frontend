@@ -18,6 +18,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }, (user) {
       prefs.userToken = user.token;
       prefs.userRol = user.rol;
+      print(user.token);
       state = AuthSuccess(user);
     });
   }
@@ -42,6 +43,21 @@ class AuthNotifier extends StateNotifier<AuthState> {
       (user) {
         if (user) {
           state = AuthRegistered(user);
+        }
+      },
+    );
+  }
+
+  Future<void> logOut() async {
+    final response = await _authRepository.logOut();
+    response.fold(
+      (left) {
+        state = AuthError("error");
+      },
+      (value) {
+        if (value) {
+          print(Preferences().userToken);
+          state = AuthInitial();
         }
       },
     );

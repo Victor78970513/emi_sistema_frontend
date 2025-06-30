@@ -16,6 +16,9 @@ abstract interface class AuthRepository {
     required String rol,
   });
 
+  //LOGOUT
+  Future<Either<Failure, bool>> logOut();
+
   // CHECKAUTH
   Future<Either<Failure, User>> checkAuth({required String token});
 }
