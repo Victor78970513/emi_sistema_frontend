@@ -23,7 +23,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> register({
+  Future<Either<Failure, bool>> register({
     required String name,
     required String lastName,
     required String email,

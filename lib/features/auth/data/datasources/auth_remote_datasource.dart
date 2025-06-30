@@ -6,7 +6,7 @@ abstract interface class AuthRemoteDatasource {
   //
   Future<UserModel> login({required String email, required String password});
   //
-  Future<UserModel> register({
+  Future<bool> register({
     required String name,
     required String lastName,
     required String email,
@@ -39,15 +39,33 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   }
 
   @override
-  Future<UserModel> register({
+  Future<bool> register({
     required String name,
     required String lastName,
     required String email,
     required String password,
     required String rol,
-  }) {
-    // TODO: implement register
-    throw UnimplementedError();
+  }) async {
+    try {
+      final response = await dio.post(
+        "http://localhost:3000/api/auth/register",
+        data: {
+          "name": name,
+          "lastName": lastName,
+          "email": email,
+          "password": password,
+          "rol": rol,
+        },
+      );
+      final user = UserModel.fromJson(response.data);
+      if (user.token.isEmpty) {
+        throw ServerException("Error al mandar el registro");
+      }
+      return true;
+    } catch (e) {
+      print(e.toString());
+      throw ServerException("Error al mandar el registro");
+    }
   }
 
   @override

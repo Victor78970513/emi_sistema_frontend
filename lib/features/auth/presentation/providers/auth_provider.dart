@@ -22,6 +22,31 @@ class AuthNotifier extends StateNotifier<AuthState> {
     });
   }
 
+  Future<void> register({
+    required String name,
+    required String lastName,
+    required String email,
+    required String password,
+  }) async {
+    final response = await _authRepository.register(
+      name: name,
+      lastName: lastName,
+      email: email,
+      password: password,
+      rol: "docente",
+    );
+    response.fold(
+      (left) {
+        state = AuthError(left.message);
+      },
+      (user) {
+        if (user) {
+          state = AuthRegistered(user);
+        }
+      },
+    );
+  }
+
   Future<void> checkAuth({required String token}) async {
     final prefs = Preferences();
     state = AuthLoading();

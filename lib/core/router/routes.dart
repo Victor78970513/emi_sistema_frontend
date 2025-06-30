@@ -2,6 +2,7 @@ class AppRoutes {
   static const String splash = '/';
   static const String loginPage = '/login';
   static const String registerPage = '/register';
+  static const String aprovalPendingPage = '/approval-pending-page';
 
   // Shell
   static const String adminShell = '/admin';

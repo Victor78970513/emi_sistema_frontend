@@ -17,6 +17,12 @@ final class AuthSuccess extends AuthState {
   const AuthSuccess(this.user);
 }
 
+final class AuthRegistered extends AuthState {
+  final bool registered;
+
+  AuthRegistered(this.registered);
+}
+
 final class AuthError extends AuthState {
   final String message;
   const AuthError(this.message);

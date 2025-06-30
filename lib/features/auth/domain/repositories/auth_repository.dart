@@ -8,7 +8,7 @@ abstract interface class AuthRepository {
       {required String email, required String password});
 
   // REQUEST REGISTER
-  Future<Either<Failure, User>> register({
+  Future<Either<Failure, bool>> register({
     required String name,
     required String lastName,
     required String email,

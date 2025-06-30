@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend_emi_sistema/core/router/routes.dart';
+import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_provider.dart';
+import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_provider_state.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/widgets/auth_button.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/widgets/auth_header.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/widgets/auth_input.dart';
@@ -14,11 +17,21 @@ class WebRegisterPage extends ConsumerStatefulWidget {
 }
 
 class _WebRegisterPageState extends ConsumerState<WebRegisterPage> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    ref.listen(authProvider, (previous, next) {
+      if (next is AuthRegistered) {
+        context.go(AppRoutes.aprovalPendingPage);
+      }
+      if (next is AuthError) {
+        print(next.message);
+      }
+    });
     return Scaffold(
       backgroundColor: Color(0xffEFEFEF),
       body: Center(
@@ -48,12 +61,12 @@ class _WebRegisterPageState extends ConsumerState<WebRegisterPage> {
               AuthInput(
                 hintText: "Nombres",
                 suffixIcon: Icons.person,
-                controller: emailController,
+                controller: nameController,
               ),
               AuthInput(
                 hintText: "Apellidos",
                 suffixIcon: Icons.person,
-                controller: emailController,
+                controller: lastNameController,
               ),
               AuthInput(
                 hintText: "Correo electronico",
@@ -63,13 +76,21 @@ class _WebRegisterPageState extends ConsumerState<WebRegisterPage> {
               AuthInput(
                 hintText: "Contraseña",
                 suffixIcon: Icons.lock_outline_rounded,
-                controller: emailController,
+                controller: passwordController,
               ),
               //
               AuthButton(
                 isLoading: false,
                 text: "Enviar Solicitud",
-                onPressed: () {},
+                onPressed: () {
+                  // context.go(AppRoutes.aprovalPendingPage);
+                  ref.read(authProvider.notifier).register(
+                        name: nameController.text,
+                        lastName: lastNameController.text,
+                        email: emailController.text.trim(),
+                        password: passwordController.text.trim(),
+                      );
+                },
                 icon: Icons.send,
               ),
               Row(
