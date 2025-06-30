@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_emi_sistema/features/auth/domain/entities/user.dart';
+import 'package:frontend_emi_sistema/features/admin/domain/entities/pending_account.dart';
 
 class PendingAccountWidget extends StatelessWidget {
-  final User user;
-  const PendingAccountWidget({super.key, required this.user});
+  final PendingAccount pendingAccount;
+  const PendingAccountWidget({super.key, required this.pendingAccount});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,9 @@ class PendingAccountWidget extends StatelessWidget {
                   radius: 30,
                   backgroundColor: Color(0xff2350ba).withValues(alpha: 0.15),
                   child: Text(
-                    user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                    pendingAccount.name.isNotEmpty
+                        ? pendingAccount.name[0].toUpperCase()
+                        : '?',
                     style: const TextStyle(
                       color: Color(0xff2350ba),
                       fontWeight: FontWeight.bold,
@@ -37,7 +39,7 @@ class PendingAccountWidget extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  user.name,
+                  pendingAccount.name,
                   style: titleTextStyle,
                   textAlign: TextAlign.center,
                 ),
@@ -46,7 +48,7 @@ class PendingAccountWidget extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  user.lastName,
+                  pendingAccount.lastName,
                   style: titleTextStyle,
                   textAlign: TextAlign.center,
                 ),
@@ -55,7 +57,7 @@ class PendingAccountWidget extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: Text(
-                  user.email,
+                  pendingAccount.email,
                   style: titleTextStyle,
                   textAlign: TextAlign.center,
                 ),
@@ -64,7 +66,7 @@ class PendingAccountWidget extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  user.rol,
+                  pendingAccount.rol,
                   style: titleTextStyle,
                   textAlign: TextAlign.center,
                 ),

@@ -23,7 +23,6 @@ class _WebLoginPageState extends ConsumerState<WebLoginPage> {
     final size = MediaQuery.of(context).size;
     final authState = ref.watch(authProvider);
     ref.listen(authProvider, (previous, next) {
-      print(next.toString());
       if (next is AuthSuccess) {
         if (next.user.rol == "admin") {
           context.go(AppRoutes.docentesPage);

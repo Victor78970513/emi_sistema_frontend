@@ -1,78 +1,107 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend_emi_sistema/core/router/routes.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/pages/admin_home_page.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/pages/docentes_page.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/pages/pending_accounts_page.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/pages/web_login_page.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/pages/web_register_page.dart';
+import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_provider.dart';
+import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_provider_state.dart';
 import 'package:go_router/go_router.dart';
 
-final GoRouter appRouter = GoRouter(
-  initialLocation: AppRoutes.loginPage,
-  debugLogDiagnostics: true,
-  // redirect: (context, state) {
-  //   final isAuthenticated = ref.read(isAuthenticatedProvider);
-  //   final rolUser = ref.read(authRoleProvider);
-  //   if (!isAuthenticated) {
-  //     return AppRoutes.loginPage;
-  //   }
-  //   if (rolUser == null) {
-  //     return AppRoutes.loginPage;
-  //   }
-  //   return null;
-  // },
-  routes: [
-    //LOGIN PAGE
-    GoRoute(
-      path: AppRoutes.loginPage,
-      name: AppRoutes.loginPage,
-      builder: (context, state) {
-        return WebLoginPage();
-      },
-    ),
+class AppRouter {
+  factory AppRouter() {
+    return _instance;
+  }
+  AppRouter._privateConstructor();
 
-    // REGISTER PAGE5
-    GoRoute(
-      path: AppRoutes.registerPage,
-      name: AppRoutes.registerPage,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: WebRegisterPage(),
-        );
-      },
-    ),
+  static final AppRouter _instance = AppRouter._privateConstructor();
 
-    // ADMIN VIEWS
-    ShellRoute(
-      builder: (context, state, child) {
-        return AdminHomePage(child: child);
+  static final routerProvider = Provider<GoRouter>((ref) {
+    final authState = ref.watch(authProvider);
+    return GoRouter(
+      initialLocation: AppRoutes.loginPage,
+      debugLogDiagnostics: true,
+      redirect: (context, state) {
+        try {
+          switch (authState) {
+            case AuthSuccess():
+              return AppRoutes.adminHomePage;
+          }
+        } catch (e, stack) {
+          print("ERROR: $e");
+          print("STACK: $stack");
+        }
+        return null;
       },
+      // redirect: (context, state) {
+      //   final isAuthenticated = ref.read(isAuthenticatedProvider);
+      //   final rolUser = ref.read(authRoleProvider);
+      //   if (!isAuthenticated) {
+      //     return AppRoutes.loginPage;
+      //   }
+      //   if (rolUser == null) {
+      //     return AppRoutes.loginPage;
+      //   }
+      //   return null;
+      // },
       routes: [
-        //DOCENTES
-
+        //LOGIN PAGE
         GoRoute(
-          path: AppRoutes.docentesPage,
-          name: AppRoutes.docentesPage,
+          path: AppRoutes.loginPage,
+          name: AppRoutes.loginPage,
+          builder: (context, state) {
+            return WebLoginPage();
+          },
+        ),
+
+        // REGISTER PAGE5
+        GoRoute(
+          path: AppRoutes.registerPage,
+          name: AppRoutes.registerPage,
           pageBuilder: (context, state) {
             return NoTransitionPage(
               key: state.pageKey,
-              child: DocentesPage(),
+              child: WebRegisterPage(),
             );
           },
         ),
 
-        //SOLICITUDES DE REGISTRO
-        GoRoute(
-          path: AppRoutes.pendingAccountsPage,
-          name: AppRoutes.pendingAccountsPage,
-          pageBuilder: (context, state) {
-            return NoTransitionPage(
-              key: state.pageKey,
-              child: PendingAccountsPage(),
-            );
+        // ADMIN VIEWS
+        ShellRoute(
+          builder: (context, state, child) {
+            return AdminHomePage(child: child);
           },
-        ),
+          routes: [
+            //DOCENTES
+
+            GoRoute(
+              path: AppRoutes.docentesPage,
+              name: AppRoutes.docentesPage,
+              pageBuilder: (context, state) {
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: DocentesPage(),
+                );
+              },
+            ),
+
+            //SOLICITUDES DE REGISTRO
+            GoRoute(
+              path: AppRoutes.pendingAccountsPage,
+              name: AppRoutes.pendingAccountsPage,
+              pageBuilder: (context, state) {
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: PendingAccountsPage(),
+                );
+              },
+            ),
+          ],
+        )
       ],
-    )
-  ],
-);
+    );
+  });
+
+  // static final GoRouter router =
+}
