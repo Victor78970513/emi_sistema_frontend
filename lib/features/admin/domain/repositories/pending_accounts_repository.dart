@@ -4,4 +4,6 @@ import 'package:frontend_emi_sistema/features/admin/domain/entities/pending_acco
 
 abstract class PendingAccountsRepository {
   Future<Either<Failure, List<PendingAccount>>> getPedingAccounts();
+
+  Future<Either<Failure, bool>> aprovePendingAccount({required int id});
 }

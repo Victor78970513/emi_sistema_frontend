@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend_emi_sistema/features/admin/domain/entities/pending_account.dart';
+import 'package:frontend_emi_sistema/features/admin/presentation/providers/pending_accounts_provider.dart';
 
-class PendingAccountWidget extends StatelessWidget {
+class PendingAccountWidget extends ConsumerWidget {
   final PendingAccount pendingAccount;
   const PendingAccountWidget({super.key, required this.pendingAccount});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final titleTextStyle = TextStyle(
       fontSize: 16,
       fontWeight: FontWeight.bold,
@@ -78,7 +80,11 @@ class PendingAccountWidget extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xff2350ba),
                       padding: EdgeInsets.symmetric(vertical: 24)),
-                  onPressed: () {},
+                  onPressed: () {
+                    ref
+                        .read(pendingAccountsProvider.notifier)
+                        .aprovePendingAccount(id: pendingAccount.userId);
+                  },
                   child: Text(
                     "Aprobar Solicitud",
                     style: TextStyle(

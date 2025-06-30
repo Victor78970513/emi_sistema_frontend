@@ -7,15 +7,17 @@ class PendingAccountModel extends PendingAccount {
     required super.lastName,
     required super.email,
     required super.rol,
+    required super.isActive,
   });
 
   factory PendingAccountModel.fromJson(Map<String, dynamic> json) {
     return PendingAccountModel(
-      userId: json["userId"],
+      userId: int.parse((json["userId"]).toString()),
       name: json["name"],
       lastName: json["lastName"],
       email: json["email"],
       rol: json["rol"],
+      isActive: json["isActive"],
     );
   }
 }

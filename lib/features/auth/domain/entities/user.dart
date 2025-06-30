@@ -5,6 +5,7 @@ class User {
   final String lastName;
   final String email;
   final String rol;
+  final bool isActive;
   User({
     required this.token,
     required this.userId,
@@ -12,5 +13,6 @@ class User {
     required this.lastName,
     required this.email,
     required this.rol,
+    required this.isActive,
   });
 }

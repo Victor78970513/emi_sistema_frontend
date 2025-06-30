@@ -20,6 +20,22 @@ class PendingAccountsNotifier extends StateNotifier<PendingAccountsState> {
       },
     );
   }
+
+  Future<void> aprovePendingAccount({required int id}) async {
+    state = PendingAccountsLoadingState();
+    final response =
+        await _pendingAccountsRepository.aprovePendingAccount(id: id);
+    response.fold(
+      (left) {
+        state = PendingAccountsErrorState(left.message);
+      },
+      (isActivated) {
+        if (isActivated) {
+          getPendingAccounts();
+        }
+      },
+    );
+  }
 }
 
 final pendingAccountsProvider =

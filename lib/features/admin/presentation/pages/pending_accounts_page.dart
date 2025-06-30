@@ -74,7 +74,11 @@ class PendingAccountsPage extends ConsumerWidget {
         );
       default:
         return Center(
-          child: Text("data"),
+          child: ElevatedButton(
+              onPressed: () {
+                ref.read(pendingAccountsProvider.notifier).getPendingAccounts();
+              },
+              child: Text("CARGAR DE NUEVO")),
         );
     }
   }

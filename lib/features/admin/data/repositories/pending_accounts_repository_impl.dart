@@ -19,4 +19,17 @@ class PendingAccountsRepositoryImpl implements PendingAccountsRepository {
       );
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> aprovePendingAccount({required int id}) async {
+    try {
+      final response =
+          await pendingAccountsDatasource.aprovePendingAccount(id: id);
+      return right(response);
+    } catch (e) {
+      return left(
+        Failure(e.toString()),
+      );
+    }
+  }
 }
