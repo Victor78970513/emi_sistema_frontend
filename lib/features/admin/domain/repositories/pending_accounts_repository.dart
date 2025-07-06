@@ -6,4 +6,7 @@ abstract class PendingAccountsRepository {
   Future<Either<Failure, List<PendingAccount>>> getPedingAccounts();
 
   Future<Either<Failure, bool>> aprovePendingAccount({required int id});
+
+  Future<Either<Failure, bool>> rejectPendingAccount(
+      {required int id, required String reason});
 }

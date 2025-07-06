@@ -12,6 +12,8 @@ class Docente {
   final int? teacherCategoryId;
   final int? entryModeId;
   final int userId;
+  final String? carreraNombre;
+  final String? estadoNombre;
 
   Docente({
     required this.docenteId,
@@ -27,5 +29,7 @@ class Docente {
     this.teacherCategoryId,
     this.entryModeId,
     required this.userId,
+    this.carreraNombre,
+    this.estadoNombre,
   });
 }

@@ -2,10 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend_emi_sistema/features/admin/domain/entities/pending_account.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/providers/pending_accounts_provider.dart';
+import 'package:frontend_emi_sistema/features/admin/presentation/widgets/reject_dialog.dart';
+import 'package:frontend_emi_sistema/shared/widgets/modern_button.dart';
 
 class PendingAccountWidget extends ConsumerWidget {
   final PendingAccount pendingAccount;
   const PendingAccountWidget({super.key, required this.pendingAccount});
+
+  void _showRejectDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => RejectDialog(
+        userName: "${pendingAccount.name} ${pendingAccount.lastName}",
+        onReject: (String reason) async {
+          await ref.read(pendingAccountsProvider.notifier).rejectPendingAccount(
+                id: pendingAccount.userId,
+                reason: reason,
+              );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -103,7 +120,7 @@ class PendingAccountWidget extends ConsumerWidget {
                         children: [
                           // Botón Aprobar
                           Expanded(
-                            child: _ModernButton(
+                            child: ModernButton(
                               text: "Aprobar",
                               backgroundColor: Color(0xff2350ba),
                               onPressed: () {
@@ -118,13 +135,11 @@ class PendingAccountWidget extends ConsumerWidget {
                           SizedBox(width: isDesktop ? 8 : 4),
                           // Botón Rechazar
                           Expanded(
-                            child: _ModernButton(
+                            child: ModernButton(
                               text: "Rechazar",
                               backgroundColor: Colors.red[600]!,
                               onPressed: () {
-                                // TODO: Implementar lógica de rechazo
-                                print(
-                                    "Rechazar solicitud de: ${pendingAccount.name}");
+                                _showRejectDialog(context, ref);
                               },
                               isDesktop: isDesktop,
                             ),
@@ -139,113 +154,6 @@ class PendingAccountWidget extends ConsumerWidget {
           ),
         );
       },
-    );
-  }
-}
-
-// Widget para botones modernos con efectos
-class _ModernButton extends StatefulWidget {
-  final String text;
-  final Color backgroundColor;
-  final VoidCallback onPressed;
-  final bool isDesktop;
-
-  const _ModernButton({
-    required this.text,
-    required this.backgroundColor,
-    required this.onPressed,
-    required this.isDesktop,
-  });
-
-  @override
-  State<_ModernButton> createState() => _ModernButtonState();
-}
-
-class _ModernButtonState extends State<_ModernButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-  bool _isHovered = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: Duration(milliseconds: 150),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) {
-        setState(() => _isHovered = true);
-        _animationController.forward();
-      },
-      onExit: (_) {
-        setState(() => _isHovered = false);
-        _animationController.reverse();
-      },
-      child: AnimatedBuilder(
-        animation: _scaleAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: _isHovered
-                    ? [
-                        BoxShadow(
-                          color: widget.backgroundColor.withValues(alpha: 0.3),
-                          blurRadius: 8,
-                          offset: Offset(0, 2),
-                        ),
-                      ]
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 4,
-                          offset: Offset(0, 1),
-                        ),
-                      ],
-              ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: widget.backgroundColor,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: EdgeInsets.symmetric(
-                    vertical: widget.isDesktop ? 10 : 8,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: widget.onPressed,
-                child: Text(
-                  widget.text,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: widget.isDesktop ? 12 : 10,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 }

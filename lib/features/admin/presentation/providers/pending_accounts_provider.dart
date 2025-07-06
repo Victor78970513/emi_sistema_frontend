@@ -36,6 +36,23 @@ class PendingAccountsNotifier extends StateNotifier<PendingAccountsState> {
       },
     );
   }
+
+  Future<void> rejectPendingAccount(
+      {required int id, required String reason}) async {
+    state = PendingAccountsLoadingState();
+    final response = await _pendingAccountsRepository.rejectPendingAccount(
+        id: id, reason: reason);
+    response.fold(
+      (left) {
+        state = PendingAccountsErrorState(left.message);
+      },
+      (isRejected) {
+        if (isRejected) {
+          getPendingAccounts();
+        }
+      },
+    );
+  }
 }
 
 final pendingAccountsProvider =

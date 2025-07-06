@@ -12,21 +12,43 @@ class DocenteImage extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final String initials =
         docente.names.isNotEmpty ? docente.names[0].toUpperCase() : 'D';
+
+    // Calcular el radio basado en el tamaño de la pantalla
+    double radius;
+    if (size.width > 1024) {
+      // Desktop
+      radius = 70;
+    } else if (size.width > 768) {
+      // Tablet
+      radius = 60;
+    } else {
+      // Mobile
+      radius = 50;
+    }
+
+    // Verificar si el docente tiene foto
     if (docente.docenteImagePath != null &&
         docente.docenteImagePath!.isNotEmpty) {
+      final String imageUrl =
+          'http://localhost:3000/uploads/docentes/${docente.docenteImagePath}';
+
       return CircleAvatar(
-        radius: size.width * 0.05,
-        backgroundImage: NetworkImage(docente.docenteImagePath!),
-        backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
+        radius: radius,
+        backgroundImage: NetworkImage(imageUrl),
+        backgroundColor: colorScheme.primary.withOpacity(0.1),
+        onBackgroundImageError: (exception, stackTrace) {
+          print('Error cargando imagen del docente: $exception');
+        },
       );
     }
+
     return CircleAvatar(
-      radius: size.width * 0.05,
-      backgroundColor: colorScheme.primary.withValues(alpha: 0.2),
+      radius: radius,
+      backgroundColor: colorScheme.primary.withOpacity(0.2),
       child: Text(
         initials,
         style: TextStyle(
-          fontSize: size.width * 0.04,
+          fontSize: radius * 0.6,
           fontWeight: FontWeight.bold,
           color: colorScheme.onPrimary,
         ),

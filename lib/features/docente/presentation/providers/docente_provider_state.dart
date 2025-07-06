@@ -7,9 +7,10 @@ final class DocenteinitialState extends DocenteState {}
 final class DocenteLoadingState extends DocenteState {}
 
 final class DocenteSuccessState extends DocenteState {
-  final Docente docente;
+  final Docente? docente;
+  final List<Docente>? docentes;
 
-  DocenteSuccessState({required this.docente});
+  DocenteSuccessState({this.docente, this.docentes});
 }
 
 final class DocenteErrorState extends DocenteState {}

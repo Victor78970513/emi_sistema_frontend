@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend_emi_sistema/core/router/routes.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_provider.dart';
 import 'package:frontend_emi_sistema/shared/widgets/lateral_navigation_item.dart';
+import 'package:frontend_emi_sistema/shared/widgets/drawer_item.dart';
 import 'package:go_router/go_router.dart';
 
 class LateralNavigationBar extends ConsumerStatefulWidget {
@@ -18,101 +19,172 @@ class _LateralNavigationBarState extends ConsumerState<LateralNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final barWidth = isExpanded ? size.width * 0.2 : size.width * 0.07;
     return LayoutBuilder(
       builder: (context, constraints) {
         final isDesktop = constraints.maxWidth > 1024;
-
-        if (isDesktop) {
-          // Vista de barra lateral para desktop
-          return _buildDesktopNavigation();
+        if (!isDesktop) {
+          return Container();
         } else {
-          // Vista de drawer para mobile
-          return _buildMobileNavigation();
-        }
-      },
-    );
-  }
-
-  Widget _buildDesktopNavigation() {
-    final size = MediaQuery.of(context).size;
-    final barWidth = isExpanded ? size.width * 0.2 : size.width * 0.06;
-
-    return Container(
-      color: Colors.white,
-      width: barWidth,
-      child: Column(
-        children: [
-          // Espacio superior
-
-          // Elementos de navegación
-          Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: !isExpanded
-                  ? Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          right: BorderSide(color: Colors.black, width: 2),
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white,
+                  Color(0xff2350ba).withValues(alpha: 0.02),
+                ],
+              ),
+              border: Border(
+                right: BorderSide(
+                  color: Color(0xff2350ba).withValues(alpha: 0.1),
+                  width: 1,
+                ),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: Offset(2, 0),
+                ),
+              ],
+            ),
+            width: barWidth,
+            child: Column(
+              children: [
+                // Header de la barra lateral
+                Container(
+                  width: double.infinity,
+                  padding:
+                      EdgeInsets.symmetric(vertical: 16), // Reducir de 20 a 16
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xff2350ba).withValues(alpha: 0.1),
+                        Color(0xff2350ba).withValues(alpha: 0.05),
+                      ],
+                    ),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Color(0xff2350ba).withValues(alpha: 0.1),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(10), // Reducir de 12 a 10
+                        decoration: BoxDecoration(
+                          color: Color(0xff2350ba),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xff2350ba).withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.white,
+                          size: 20, // Reducir de 24 a 20
                         ),
                       ),
-                      child: Column(
-                        children: [
-                          // Elementos principales
-                          LateralNavigatorItem(
-                            index: 0,
-                            title: "Docentes",
-                            icon: Icons.people,
-                            path: AppRoutes.docentesPage,
-                          ),
-                          LateralNavigatorItem(
-                            title: "Solicitud de Registros",
-                            icon: Icons.app_registration_outlined,
-                            path: AppRoutes.pendingAccountsPage,
-                            index: 1,
-                          ),
-                          LateralNavigatorItem(
-                            title: "Asignaturas",
-                            icon: Icons.subject_rounded,
-                            path: AppRoutes.pendingAccountsPage,
-                            index: 2,
-                          ),
-                          LateralNavigatorItem(
-                            title: "Horarios",
-                            icon: Icons.insert_chart_outlined,
-                            path: AppRoutes.pendingAccountsPage,
-                            index: 3,
-                          ),
-
-                          // Espacio flexible para empujar el logout hacia abajo
-                          Spacer(),
-
-                          // Botón de cerrar sesión
-                          LateralNavigatorItem(
-                            title: "Cerrar Sesión",
-                            icon: Icons.logout,
-                            path: AppRoutes.loginPage,
-                            onTap: () async {
-                              await ref.read(authProvider.notifier).logOut();
-                              context.go(AppRoutes.loginPage);
-                            },
-                            index: 4,
-                          ),
-                          SizedBox(height: 16),
-                        ],
+                      SizedBox(height: 8),
+                      Text(
+                        "Admin",
+                        style: TextStyle(
+                          color: Color(0xff2350ba),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                    )
-                  : null,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+                    ],
+                  ),
+                ),
 
-  Widget _buildMobileNavigation() {
-    return Container(
-      width: 0,
-      child: null, // En mobile no mostramos la barra lateral
+                // Elementos de navegación
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: !isExpanded
+                        ? Container(
+                            child: Column(
+                              children: [
+                                // Elementos principales
+                                LateralNavigatorItem(
+                                  index: 0,
+                                  title: "Docentes",
+                                  icon: Icons.people,
+                                  path: AppRoutes.docentesPage,
+                                ),
+                                LateralNavigatorItem(
+                                  title: "Solicitud de Registros",
+                                  icon: Icons.app_registration_outlined,
+                                  path: AppRoutes.pendingAccountsPage,
+                                  index: 1,
+                                ),
+                                LateralNavigatorItem(
+                                  title: "Asignaturas",
+                                  icon: Icons.subject_rounded,
+                                  path: AppRoutes.pendingAccountsPage,
+                                  index: 2,
+                                ),
+                                LateralNavigatorItem(
+                                  title: "Horarios",
+                                  icon: Icons.insert_chart_outlined,
+                                  path: AppRoutes.pendingAccountsPage,
+                                  index: 3,
+                                ),
+
+                                // Espacio flexible para empujar el logout hacia abajo
+                                Spacer(),
+
+                                // Separador
+                                Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 4), // Reducir vertical de 8 a 4
+                                  height: 1,
+                                  color:
+                                      Color(0xff2350ba).withValues(alpha: 0.1),
+                                ),
+
+                                // Botón de cerrar sesión
+                                LateralNavigatorItem(
+                                  title: "Cerrar Sesión",
+                                  icon: Icons.logout,
+                                  path: AppRoutes.loginPage,
+                                  onTap: () async {
+                                    await ref
+                                        .read(authProvider.notifier)
+                                        .logOut();
+                                    context.go(AppRoutes.loginPage);
+                                  },
+                                  index: 4,
+                                ),
+                                SizedBox(
+                                    height:
+                                        8), // Reducir de 16 a 8 para evitar overflow
+                              ],
+                            ),
+                          )
+                        : null,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
 }
@@ -130,21 +202,49 @@ class MobileNavigationDrawer extends ConsumerWidget {
           children: [
             // Header del drawer
             Container(
-              padding: EdgeInsets.only(top: 50, bottom: 20),
+              width: double.infinity,
+              padding: EdgeInsets.only(top: 40, bottom: 20),
               decoration: BoxDecoration(
-                color: Color(0xff2350ba).withValues(alpha: 0.1),
-                border: Border(
-                  bottom: BorderSide(color: Colors.grey[300]!, width: 1),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xff2350ba).withValues(alpha: 0.15),
+                    Color(0xff2350ba).withValues(alpha: 0.05),
+                  ],
                 ),
+                border: Border(
+                  bottom: BorderSide(
+                    color: Color(0xff2350ba).withValues(alpha: 0.2),
+                    width: 1,
+                  ),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Color(0xff2350ba),
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Color(0xff2350ba),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xff2350ba).withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
                     child: Icon(
                       Icons.admin_panel_settings,
-                      size: 40,
+                      size: 28,
                       color: Colors.white,
                     ),
                   ),
@@ -152,10 +252,12 @@ class MobileNavigationDrawer extends ConsumerWidget {
                   Text(
                     "Panel de Administración",
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                       color: Color(0xff2350ba),
+                      letterSpacing: 0.3,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -166,33 +268,25 @@ class MobileNavigationDrawer extends ConsumerWidget {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  _buildDrawerItem(
-                    context: context,
+                  DrawerItem(
                     title: "Docentes",
                     icon: Icons.people,
                     path: AppRoutes.docentesPage,
-                    index: 0,
                   ),
-                  _buildDrawerItem(
-                    context: context,
+                  DrawerItem(
                     title: "Solicitud de Registros",
                     icon: Icons.app_registration_outlined,
                     path: AppRoutes.pendingAccountsPage,
-                    index: 1,
                   ),
-                  _buildDrawerItem(
-                    context: context,
+                  DrawerItem(
                     title: "Asignaturas",
                     icon: Icons.subject_rounded,
                     path: AppRoutes.pendingAccountsPage,
-                    index: 2,
                   ),
-                  _buildDrawerItem(
-                    context: context,
+                  DrawerItem(
                     title: "Horarios",
                     icon: Icons.insert_chart_outlined,
                     path: AppRoutes.pendingAccountsPage,
-                    index: 3,
                   ),
                 ],
               ),
@@ -200,14 +294,34 @@ class MobileNavigationDrawer extends ConsumerWidget {
 
             // Botón de cerrar sesión
             Container(
-              padding: EdgeInsets.all(16),
+              margin: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.red.withValues(alpha: 0.1),
+                border: Border.all(
+                  color: Colors.red.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
               child: ListTile(
-                leading: Icon(Icons.logout, color: Colors.red),
+                leading: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.logout,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                ),
                 title: Text(
                   "Cerrar Sesión",
                   style: TextStyle(
                     color: Colors.red,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
                   ),
                 ),
                 onTap: () async {
@@ -219,29 +333,6 @@ class MobileNavigationDrawer extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildDrawerItem({
-    required BuildContext context,
-    required String title,
-    required IconData icon,
-    required String path,
-    required int index,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: Color(0xff2350ba)),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: Colors.black87,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      onTap: () {
-        Navigator.pop(context); // Cerrar el drawer
-        context.go(path);
-      },
     );
   }
 }

@@ -33,4 +33,18 @@ class PendingAccountsRepositoryImpl implements PendingAccountsRepository {
       return left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> rejectPendingAccount(
+      {required int id, required String reason}) async {
+    try {
+      final response = await pendingAccountsDatasource.rejectPendingAccount(
+          id: id, reason: reason);
+      return right(response);
+    } on DioException {
+      return left(NetworkFailure('No se pudo conectar al servidor'));
+    } catch (e) {
+      return left(ServerFailure(e.toString()));
+    }
+  }
 }
