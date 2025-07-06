@@ -11,13 +11,30 @@ class PendingAccountModel extends PendingAccount {
   });
 
   factory PendingAccountModel.fromJson(Map<String, dynamic> json) {
+    // Mapear rol_id a nombre de rol
+    String getRolName(String rolId) {
+      switch (int.tryParse(rolId) ?? 0) {
+        case 1:
+          return "admin";
+        case 2:
+          return "docente";
+        default:
+          return "unknown";
+      }
+    }
+
+    // Mapear estado_id a isActive
+    bool getIsActive(String estadoId) {
+      return int.tryParse(estadoId) == 1; // 1 = activo, otros = inactivo
+    }
+
     return PendingAccountModel(
-      userId: int.parse((json["userId"]).toString()),
-      name: json["name"],
-      lastName: json["lastName"],
-      email: json["email"],
-      rol: json["rol"],
-      isActive: json["isActive"],
+      userId: int.tryParse(json["id"] ?? "0") ?? 0,
+      name: json["nombres"] ?? "",
+      lastName: json["apellidos"] ?? "",
+      email: json["correo"] ?? "",
+      rol: getRolName(json["rol_id"] ?? "0"),
+      isActive: getIsActive(json["estado_id"] ?? "0"),
     );
   }
 }

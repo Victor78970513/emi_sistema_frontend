@@ -5,81 +5,139 @@ class UserInfoHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleTextStyle = TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-      color: Colors.black,
-    );
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 60,
-            height: 10,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isDesktop = constraints.maxWidth > 1024;
+
+        final titleTextStyle = TextStyle(
+          fontSize: isDesktop ? 16 : 14,
+          fontWeight: FontWeight.w600,
+          color: Color(0xff2350ba),
+          letterSpacing: 0.5,
+        );
+
+        return Container(
+          margin: EdgeInsets.symmetric(
+            horizontal: isDesktop ? 24 : 16,
+            vertical: 8,
           ),
-          // Nombre
-          Expanded(
-            flex: 2,
-            child: Container(
-              // color: Colors.red,
-              child: Text(
-                "Nombres",
-                style: titleTextStyle,
-                textAlign: TextAlign.center,
-              ),
+          decoration: BoxDecoration(
+            color: Color(0xff2350ba).withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Color(0xff2350ba).withValues(alpha: 0.1),
+              width: 1,
             ),
           ),
-          // Email
-          Expanded(
-            flex: 2,
-            child: Container(
-              // color: Colors.blue,
-              child: Text(
-                "Apellidos",
-                style: titleTextStyle,
-                textAlign: TextAlign.center,
-              ),
-            ),
+          padding: EdgeInsets.symmetric(
+            horizontal: isDesktop ? 24 : 16,
+            vertical: 16,
           ),
-          // Teléfono
-          Expanded(
-            flex: 3,
-            child: Container(
-              // color: Colors.pink,
-              child: Text(
-                "Correo electronico",
-                style: titleTextStyle,
-                textAlign: TextAlign.center,
+          child: Row(
+            children: [
+              SizedBox(
+                width: isDesktop ? 60 : 50,
+                height: 10,
               ),
-            ),
-          ),
-          // Rol
-          Expanded(
-            flex: 2,
-            child: Container(
-              // color: Colors.green,
-              child: Text(
-                "Rol de Usuario",
-                style: titleTextStyle,
-                textAlign: TextAlign.center,
+              // Nombre
+              Expanded(
+                flex: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.person_outline,
+                      size: 16,
+                      color: Color(0xff2350ba),
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      "Nombres",
+                      style: titleTextStyle,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
-          // Estado
-          Expanded(
-            flex: 2,
-            child: Container(
-              // color: Colors.amber,
-              child: Text(
-                "Acciones",
-                style: titleTextStyle,
-                textAlign: TextAlign.center,
+              // Email
+              Expanded(
+                flex: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.person_outline,
+                      size: 16,
+                      color: Color(0xff2350ba),
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      "Apellidos",
+                      style: titleTextStyle,
+                    ),
+                  ],
+                ),
               ),
-            ),
+              // Teléfono
+              Expanded(
+                flex: 3,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.email_outlined,
+                      size: 16,
+                      color: Color(0xff2350ba),
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      isDesktop ? "Correo electronico" : "Correo",
+                      style: titleTextStyle,
+                    ),
+                  ],
+                ),
+              ),
+              // Rol
+              Expanded(
+                flex: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.admin_panel_settings_outlined,
+                      size: 16,
+                      color: Color(0xff2350ba),
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      "Rol de Usuario",
+                      style: titleTextStyle,
+                    ),
+                  ],
+                ),
+              ),
+              // Estado
+              Expanded(
+                flex: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.settings_outlined,
+                      size: 16,
+                      color: Color(0xff2350ba),
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      "Acciones",
+                      style: titleTextStyle,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

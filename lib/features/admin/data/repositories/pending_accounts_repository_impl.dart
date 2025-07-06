@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:frontend_emi_sistema/core/error/failures.dart';
 import 'package:frontend_emi_sistema/features/admin/data/datasource/pending_accounts_datasource.dart';
 import 'package:frontend_emi_sistema/features/admin/domain/entities/pending_account.dart';
@@ -13,10 +14,10 @@ class PendingAccountsRepositoryImpl implements PendingAccountsRepository {
     try {
       final response = await pendingAccountsDatasource.getPendingAccounts();
       return right(response);
+    } on DioException {
+      return left(NetworkFailure('No se pudo conectar al servidor'));
     } catch (e) {
-      return left(
-        Failure(e.toString()),
-      );
+      return left(ServerFailure(e.toString()));
     }
   }
 
@@ -26,10 +27,10 @@ class PendingAccountsRepositoryImpl implements PendingAccountsRepository {
       final response =
           await pendingAccountsDatasource.aprovePendingAccount(id: id);
       return right(response);
+    } on DioException {
+      return left(NetworkFailure('No se pudo conectar al servidor'));
     } catch (e) {
-      return left(
-        Failure(e.toString()),
-      );
+      return left(ServerFailure(e.toString()));
     }
   }
 }

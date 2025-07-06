@@ -8,11 +8,12 @@ abstract interface class AuthRemoteDatasource {
   Future<UserModel> login({required String email, required String password});
   //
   Future<bool> register({
-    required String name,
-    required String lastName,
-    required String email,
-    required String password,
-    required String rol,
+    required String nombres,
+    required String apellidos,
+    required String correo,
+    required String contrasena,
+    required int rolId,
+    required int carreraId,
   });
   //
   Future<UserModel> checkAuth({required String token});
@@ -29,43 +30,59 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       final response = await dio.post(
         "http://localhost:3000/api/auth/login",
         data: {
-          "email": email,
-          "password": password,
+          "correo": email,
+          "contraseña": password,
         },
       );
+
+      print("Respuesta del backend: ${response.data}");
+
       final user = UserModel.fromJson(response.data);
       return user;
     } catch (e) {
-      print(e.toString());
-      throw ServerException("Error en el Login");
+      // ignore: avoid_print
+      print("Error en login: ${e.toString()}");
+      if (e is DioException) {
+        print("Status code: ${e.response?.statusCode}");
+        print("Response data: ${e.response?.data}");
+        if (e.response?.data != null) {
+          final errorMessage =
+              e.response?.data['message'] ?? 'Error al iniciar sesión';
+          throw ServerException(errorMessage);
+        }
+      }
+      throw ServerException("Error al iniciar sesión");
     }
   }
 
   @override
   Future<bool> register({
-    required String name,
-    required String lastName,
-    required String email,
-    required String password,
-    required String rol,
+    required String nombres,
+    required String apellidos,
+    required String correo,
+    required String contrasena,
+    required int rolId,
+    required int carreraId,
   }) async {
     try {
       final response = await dio.post(
         "http://localhost:3000/api/auth/register",
         data: {
-          "name": name,
-          "lastName": lastName,
-          "email": email,
-          "password": password,
-          "rol": rol,
+          "nombres": nombres,
+          "apellidos": apellidos,
+          "correo": correo,
+          "contraseña": contrasena,
+          "rol_id": rolId,
+          "carrera_id": carreraId,
         },
       );
-      final user = UserModel.fromJson(response.data);
-      if (user.token.isEmpty) {
-        throw ServerException("Error al mandar el registro");
+      if (response.data is Map &&
+          (response.data['token'] ?? '').toString().isNotEmpty) {
+        return true;
       }
-      return true;
+      throw ServerException("Error al mandar el registro");
     } catch (e) {
+      // ignore: avoid_print
       print(e.toString());
       throw ServerException("Error al mandar el registro");
     }
@@ -73,17 +90,27 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
 
   @override
   Future<UserModel> checkAuth({required String token}) async {
+    print("checkAuth - Iniciando verificación con token: $token");
     try {
       final response = await dio.post(
         "http://localhost:3000/api/auth/checkAuth",
         data: {"token": token},
       );
+
+      print("Respuesta del checkAuth: ${response.data}");
+
       final user = UserModel.fromJson(response.data);
+      print("checkAuth - Usuario verificado: ${user.name} ${user.lastName}");
       return user;
     } catch (e) {
-      print(e.toString());
+      // ignore: avoid_print
+      print("Error en checkAuth: ${e.toString()}");
+      if (e is DioException) {
+        print("Status code: ${e.response?.statusCode}");
+        print("Response data: ${e.response?.data}");
+      }
       throw ServerException(
-        "Error en el CheckLogin",
+        "",
       );
     }
   }
@@ -92,16 +119,22 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   Future<bool> logOut() async {
     try {
       final prefs = Preferences();
-      prefs.clear();
+      await prefs.clear();
+      print("Logout - Preferencias limpiadas");
+
+      // Verificar que se limpiaron correctamente
       if (prefs.userToken.isEmpty) {
+        print("Logout - Token eliminado correctamente");
         return true;
       } else {
+        print("Logout - Error: Token no se eliminó");
         return false;
       }
     } catch (e) {
-      print(e.toString());
+      // ignore: avoid_print
+      print("Error en logout: ${e.toString()}");
       throw ServerException(
-        "Error al cerrar sesion",
+        "Error al cerrar sesión",
       );
     }
   }

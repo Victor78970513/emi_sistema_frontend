@@ -15,9 +15,17 @@ class Preferences {
 
   Future<void> clear() async => _prefs?.clear();
 
-  String get userToken => _prefs?.getString('userToken') ?? "";
-  set userToken(String value) => _prefs?.setString("userToken", value);
+  String get userToken {
+    final token = _prefs?.getString('userToken') ?? "";
+    return token;
+  }
+
+  set userToken(String value) {
+    _prefs?.setString("userToken", value);
+  }
 
   String get userRol => _prefs?.getString("userRol") ?? "";
-  set userRol(String value) => _prefs?.setString("userRol", value);
+  set userRol(String value) {
+    _prefs?.setString("userRol", value);
+  }
 }

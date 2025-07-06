@@ -18,23 +18,27 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }, (user) {
       prefs.userToken = user.token;
       prefs.userRol = user.rol;
-      print(user.token);
       state = AuthSuccess(user);
     });
   }
 
   Future<void> register({
-    required String name,
-    required String lastName,
-    required String email,
-    required String password,
+    required String nombres,
+    required String apellidos,
+    required String correo,
+    required String contrasena,
+    required int rolId,
+    required int carreraId,
   }) async {
+    state = AuthLoading();
+    await Future.delayed(Duration(seconds: 2));
     final response = await _authRepository.register(
-      name: name,
-      lastName: lastName,
-      email: email,
-      password: password,
-      rol: "docente",
+      nombres: nombres,
+      apellidos: apellidos,
+      correo: correo,
+      contrasena: contrasena,
+      rolId: rolId,
+      carreraId: carreraId,
     );
     response.fold(
       (left) {
@@ -49,15 +53,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logOut() async {
+    state = AuthLoading();
+
     final response = await _authRepository.logOut();
     response.fold(
       (left) {
-        state = AuthError("error");
+        state = AuthError(left.message);
       },
       (value) {
         if (value) {
-          print(Preferences().userToken);
           state = AuthInitial();
+        } else {
+          state = AuthError("Error al cerrar sesión");
         }
       },
     );
@@ -74,7 +81,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       (user) {
         prefs.userToken = user.token;
         prefs.userRol = user.rol;
-        print("TOKEN: ${prefs.userToken}");
         state = AuthSuccess(user);
       },
     );
@@ -85,16 +91,3 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   return AuthNotifier(repository);
 });
-
-// final authRoleProvider = Provider<String?>((ref) {
-//   final state = ref.watch(authProvider);
-//   if (state is AuthSuccess) {
-//     return state.user.rol; // puede ser "admin", "user", etc.
-//   }
-//   return null;
-// });
-
-// final isAuthenticatedProvider = Provider<bool>((ref) {
-//   final state = ref.watch(authProvider);
-//   return state is AuthSuccess;
-// });

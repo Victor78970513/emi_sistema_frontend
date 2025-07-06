@@ -8,18 +8,32 @@ class UserModel extends User {
     required super.lastName,
     required super.email,
     required super.rol,
-    required super.isActive,
+    required super.estadoId,
+    required super.carreraId,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    // Mapear rol_id a nombre de rol
+    String getRolName(String rolId) {
+      switch (int.tryParse(rolId) ?? 0) {
+        case 1:
+          return "admin";
+        case 2:
+          return "docente";
+        default:
+          return "unknown";
+      }
+    }
+
     return UserModel(
-      token: json["token"],
-      userId: json["user"]["id"],
-      name: json["user"]["name"],
-      lastName: json["user"]["lastName"],
-      email: json["user"]["email"],
-      rol: json["user"]["rol"],
-      isActive: json["user"]["isActive"],
+      token: json["token"] ?? "",
+      userId: json["user"]["id"] ?? "",
+      name: json["user"]["nombres"] ?? "",
+      lastName: json["user"]["apellidos"] ?? "",
+      email: json["user"]["correo"] ?? "",
+      rol: getRolName(json["user"]["rol_id"] ?? "0"),
+      estadoId: json["user"]["estado_id"] ?? "",
+      carreraId: json["user"]["carrera_id"] ?? "",
     );
   }
 }

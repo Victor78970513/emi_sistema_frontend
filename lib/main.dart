@@ -13,9 +13,9 @@ import 'package:frontend_emi_sistema/features/docente/data/repositories/docente_
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_repository_provider.dart';
 import 'package:go_router/go_router.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Preferences().init();
+  await Preferences().init();
   GoRouter.optionURLReflectsImperativeAPIs = true;
   runApp(
     ProviderScope(

@@ -42,21 +42,21 @@ class LateralNavigatorItem extends ConsumerWidget {
                 color: isSelected ? Color(0xff2350ba) : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
               ),
-              padding: const EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Column(
                 children: [
                   Icon(
                     icon,
                     color: isSelected ? Colors.white : Color(0xff55637f),
-                    size: 28,
+                    size: 20,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 6),
                   Text(
                     title,
                     style: TextStyle(
                       color: isSelected ? Colors.white : Color(0xff55637f),
                       fontWeight: FontWeight.w400,
-                      fontSize: 14,
+                      fontSize: 11,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 2,

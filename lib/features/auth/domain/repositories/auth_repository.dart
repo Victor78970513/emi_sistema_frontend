@@ -9,11 +9,12 @@ abstract interface class AuthRepository {
 
   // REQUEST REGISTER
   Future<Either<Failure, bool>> register({
-    required String name,
-    required String lastName,
-    required String email,
-    required String password,
-    required String rol,
+    required String nombres,
+    required String apellidos,
+    required String correo,
+    required String contrasena,
+    required int rolId,
+    required int carreraId,
   });
 
   //LOGOUT

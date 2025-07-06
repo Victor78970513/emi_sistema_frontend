@@ -67,8 +67,8 @@ class _DocenteLateralNavigationBarState
                             title: "Cerrar Sesión",
                             icon: Icons.logout,
                             path: AppRoutes.loginPage,
-                            onTap: () {
-                              ref.read(authProvider.notifier).logOut();
+                            onTap: () async {
+                              await ref.read(authProvider.notifier).logOut();
                               context.go(AppRoutes.loginPage);
                             },
                             index: 4,

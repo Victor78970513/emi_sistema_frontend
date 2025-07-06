@@ -26,16 +26,58 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: Row(
-          children: [
-            LateralNavigationBar(),
-            Expanded(
-              child: widget.child,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isDesktop = constraints.maxWidth > 1024;
+
+        if (isDesktop) {
+          // Vista de desktop con barra lateral
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: Row(
+              children: [
+                LateralNavigationBar(),
+                Expanded(
+                  child: widget.child,
+                ),
+              ],
             ),
-          ],
-        ));
+          );
+        } else {
+          // Vista de mobile con drawer
+          return Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              leading: Builder(
+                builder: (context) => IconButton(
+                  icon: Icon(
+                    Icons.menu,
+                    color: Color(0xff2350ba),
+                    size: 28,
+                  ),
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                ),
+              ),
+              title: Text(
+                "Panel de Administración",
+                style: TextStyle(
+                  color: Color(0xff2350ba),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              centerTitle: true,
+            ),
+            drawer: MobileNavigationDrawer(),
+            body: widget.child,
+          );
+        }
+      },
+    );
   }
 }
 

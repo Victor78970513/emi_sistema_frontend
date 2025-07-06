@@ -12,14 +12,28 @@ class PendingAccountsDatasourceImpl implements PendingAccountsDatasource {
   @override
   Future<List<PendingAccountModel>> getPendingAccounts() async {
     try {
+      print("PendingAccountsDatasource - Obteniendo cuentas pendientes");
       final response =
           await dio.get("http://localhost:3000/api/admin/users/pending");
+
+      print(
+          "PendingAccountsDatasource - Respuesta del backend: ${response.data}");
+
       final data = response.data as List<dynamic>;
       final pendingAccounts =
           data.map((account) => PendingAccountModel.fromJson(account)).toList();
+
+      print(
+          "PendingAccountsDatasource - Cuentas pendientes procesadas: ${pendingAccounts.length}");
+
       return pendingAccounts;
     } catch (e) {
-      print(e.toString());
+      // ignore: avoid_print
+      print("Error en getPendingAccounts: ${e.toString()}");
+      if (e is DioException) {
+        print("Status code: ${e.response?.statusCode}");
+        print("Response data: ${e.response?.data}");
+      }
       throw ServerException("Error al traer cuentas pendientes");
     }
   }
@@ -27,17 +41,29 @@ class PendingAccountsDatasourceImpl implements PendingAccountsDatasource {
   @override
   Future<bool> aprovePendingAccount({required int id}) async {
     try {
+      print("PendingAccountsDatasource - Aprobando cuenta con ID: $id");
       final response =
           await dio.put("http://localhost:3000/api/admin/users/$id/activate");
+
+      print(
+          "PendingAccountsDatasource - Respuesta de aprobación: ${response.data}");
+
       final data = response.data;
-      print(data.toString());
       final user = PendingAccountModel.fromJson(data);
+
       if (!user.isActive) {
         throw ServerException("Error al activar cuenta");
       }
+
+      print("PendingAccountsDatasource - Cuenta aprobada exitosamente");
       return user.isActive;
     } catch (e) {
-      print(e.toString());
+      // ignore: avoid_print
+      print("Error en aprovePendingAccount: ${e.toString()}");
+      if (e is DioException) {
+        print("Status code: ${e.response?.statusCode}");
+        print("Response data: ${e.response?.data}");
+      }
       throw ServerException("Error al activar cuenta");
     }
   }

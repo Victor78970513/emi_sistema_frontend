@@ -17,12 +17,12 @@ class DocenteImage extends StatelessWidget {
       return CircleAvatar(
         radius: size.width * 0.05,
         backgroundImage: NetworkImage(docente.docenteImagePath!),
-        backgroundColor: colorScheme.primary.withOpacity(0.1),
+        backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
       );
     }
     return CircleAvatar(
       radius: size.width * 0.05,
-      backgroundColor: colorScheme.primary.withOpacity(0.2),
+      backgroundColor: colorScheme.primary.withValues(alpha: 0.2),
       child: Text(
         initials,
         style: TextStyle(

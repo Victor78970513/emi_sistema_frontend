@@ -1,11 +1,12 @@
 class User {
   final String token;
-  final int userId;
+  final String userId;
   final String name;
   final String lastName;
   final String email;
   final String rol;
-  final bool isActive;
+  final String estadoId;
+  final String carreraId;
   User({
     required this.token,
     required this.userId,
@@ -13,6 +14,7 @@ class User {
     required this.lastName,
     required this.email,
     required this.rol,
-    required this.isActive,
+    required this.estadoId,
+    required this.carreraId,
   });
 }
