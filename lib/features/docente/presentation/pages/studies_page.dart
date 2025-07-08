@@ -281,7 +281,6 @@ class _StudyCard extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: () async {
                 try {
-                  // Cambia de /uploads/estudios/ a /uploads/estudios_academicos/
                   final url = 'http://localhost:3000/uploads/estudios_academicos/${estudio.documentoUrl}';
                   
                   if (await canLaunchUrl(Uri.parse(url))) {
