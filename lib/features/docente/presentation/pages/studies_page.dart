@@ -279,6 +279,7 @@ class _StudyCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
+              // gg
               onPressed: () async {
                 try {
                   final url = 'http://localhost:3000/uploads/estudios_academicos/${estudio.documentoUrl}';
