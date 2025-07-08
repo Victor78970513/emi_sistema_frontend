@@ -10,6 +10,8 @@ import 'package:frontend_emi_sistema/features/docente/presentation/providers/doc
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+
 class StudiesPage extends ConsumerWidget {
   const StudiesPage({super.key});
 
@@ -277,12 +279,26 @@ class _StudyCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
+              // ggg
               onPressed: () async {
-                final url =
-                    'http://localhost:3000/uploads/estudios/${estudio.documentoUrl}';
-                if (await canLaunchUrl(Uri.parse(url))) {
-                  await launchUrl(Uri.parse(url),
-                      mode: LaunchMode.externalApplication);
+                try {
+                  final url = 'http://localhost:3000/uploads/estudios_academicos/${estudio.documentoUrl}';
+                  
+                  if (await canLaunchUrl(Uri.parse(url))) {
+                    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                  } else {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No se pudo abrir el documento')),
+                      );
+                    }
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Error al acceder al documento')),
+                    );
+                  }
                 }
               },
               icon: const Icon(
