@@ -4,6 +4,7 @@ import 'package:frontend_emi_sistema/features/admin/presentation/providers/pendi
 import 'package:frontend_emi_sistema/features/admin/presentation/providers/pending_accounts_state.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/widgets/pending_account_widget.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/widgets/pending_accounts_header.dart';
+import 'package:frontend_emi_sistema/features/admin/presentation/widgets/reject_dialog.dart';
 
 class PendingAccountsPage extends ConsumerWidget {
   const PendingAccountsPage({super.key});
@@ -331,8 +332,22 @@ class _MobilePendingAccountCard extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        // TODO: Implementar lógica de rechazo
-                        print("Rechazar solicitud de: ${pendingAccount.name}");
+                        showDialog(
+                          context: Navigator.of(context, rootNavigator: true)
+                              .context,
+                          builder: (dialogContext) => RejectDialog(
+                            userName:
+                                "${pendingAccount.name} ${pendingAccount.lastName}",
+                            onReject: (String reason) async {
+                              await ref
+                                  .read(pendingAccountsProvider.notifier)
+                                  .rejectPendingAccount(
+                                    id: pendingAccount.userId,
+                                    reason: reason,
+                                  );
+                            },
+                          ),
+                        );
                       },
                       child: Text(
                         "Rechazar",

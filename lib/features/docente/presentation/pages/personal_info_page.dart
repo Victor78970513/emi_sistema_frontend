@@ -491,25 +491,25 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                           ],
                         ),
                         SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildMobileActionButton(
-                                'Estudios',
-                                Icons.school,
-                                () => print('Ver estudios'),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: _buildMobileActionButton(
-                                'CV',
-                                Icons.download,
-                                () => print('Descargar CV'),
-                              ),
-                            ),
-                          ],
-                        ),
+                        // Row(
+                        //   children: [
+                        //     Expanded(
+                        //       child: _buildMobileActionButton(
+                        //         'Estudios',
+                        //         Icons.school,
+                        //         () => print('Ver estudios'),
+                        //       ),
+                        //     ),
+                        //     SizedBox(width: 12),
+                        //     Expanded(
+                        //       child: _buildMobileActionButton(
+                        //         'CV',
+                        //         Icons.download,
+                        //         () => print('Descargar CV'),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),

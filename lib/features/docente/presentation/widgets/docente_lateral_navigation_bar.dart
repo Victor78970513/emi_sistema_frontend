@@ -132,18 +132,18 @@ class _DocenteLateralNavigationBarState
                                   path: AppRoutes.studiesPage,
                                   index: 1,
                                 ),
-                                LateralNavigatorItem(
-                                  title: "Asignaturas",
-                                  icon: Icons.subject_rounded,
-                                  path: AppRoutes.studiesPage,
-                                  index: 2,
-                                ),
-                                LateralNavigatorItem(
-                                  title: "Horarios",
-                                  icon: Icons.schedule,
-                                  path: AppRoutes.studiesPage,
-                                  index: 3,
-                                ),
+                                // LateralNavigatorItem(
+                                //   title: "Asignaturas",
+                                //   icon: Icons.subject_rounded,
+                                //   path: AppRoutes.studiesPage,
+                                //   index: 2,
+                                // ),
+                                // LateralNavigatorItem(
+                                //   title: "Horarios",
+                                //   icon: Icons.schedule,
+                                //   path: AppRoutes.studiesPage,
+                                //   index: 3,
+                                // ),
 
                                 // Espacio flexible para empujar el logout hacia abajo
                                 Spacer(),

@@ -17,6 +17,7 @@ class StudiesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final estudiosState = ref.watch(estudiosAcademicosProvider);
+    final docenteState = ref.watch(docenteProvider);
     final isDesktop = MediaQuery.of(context).size.width > 1024;
     final isTablet = MediaQuery.of(context).size.width > 600 &&
         MediaQuery.of(context).size.width <= 1024;
@@ -26,6 +27,20 @@ class StudiesPage extends ConsumerWidget {
             ? 2
             : 1;
     final showFab = !isDesktop && !isTablet;
+
+    // Disparar carga de estudios si el estado es inicial
+    if (!(estudiosState is EstudiosAcademicosLoadingState) &&
+        !(estudiosState is EstudiosAcademicosSuccessState) &&
+        !(estudiosState is EstudiosAcademicosErrorState)) {
+      if (docenteState is DocenteSuccessState && docenteState.docente != null) {
+        final docenteId = docenteState.docente!.docenteId;
+        Future.microtask(() {
+          ref
+              .read(estudiosAcademicosProvider.notifier)
+              .getEstudiosAcademicos(docenteId: docenteId);
+        });
+      }
+    }
 
     return Container(
       color: const Color(0xFFF4F6FB), // Fondo general gris claro
@@ -103,14 +118,18 @@ class StudiesPage extends ConsumerWidget {
                     child: Builder(
                       builder: (context) {
                         if (estudiosState is EstudiosAcademicosLoadingState) {
+                          print('StudiesPage: Estado loading');
                           return const Center(
                               child: CircularProgressIndicator());
                         }
                         if (estudiosState is EstudiosAcademicosErrorState) {
+                          print('StudiesPage: Estado error');
                           return Center(
                               child: Text('Error al cargar estudios'));
                         }
                         if (estudiosState is EstudiosAcademicosSuccessState) {
+                          print(
+                              'StudiesPage: Estado success, estudios: [estudiosState.estudios.length]');
                           final estudios = estudiosState.estudios;
                           if (estudios.isEmpty) {
                             return _buildEmptyState();
@@ -131,7 +150,17 @@ class StudiesPage extends ConsumerWidget {
                           );
                         }
                         // Estado inicial o desconocido
-                        return const SizedBox.shrink();
+                        print('StudiesPage: Estado inicial o desconocido');
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(),
+                              SizedBox(height: 16),
+                              Text('Cargando estudios académicos...'),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ),

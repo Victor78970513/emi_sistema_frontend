@@ -9,21 +9,6 @@ class PendingAccountWidget extends ConsumerWidget {
   final PendingAccount pendingAccount;
   const PendingAccountWidget({super.key, required this.pendingAccount});
 
-  void _showRejectDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => RejectDialog(
-        userName: "${pendingAccount.name} ${pendingAccount.lastName}",
-        onReject: (String reason) async {
-          await ref.read(pendingAccountsProvider.notifier).rejectPendingAccount(
-                id: pendingAccount.userId,
-                reason: reason,
-              );
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return LayoutBuilder(
@@ -139,7 +124,25 @@ class PendingAccountWidget extends ConsumerWidget {
                               text: "Rechazar",
                               backgroundColor: Colors.red[600]!,
                               onPressed: () {
-                                _showRejectDialog(context, ref);
+                                print("Botón Rechazar presionado");
+                                showDialog(
+                                  context:
+                                      Navigator.of(context, rootNavigator: true)
+                                          .context,
+                                  builder: (dialogContext) => RejectDialog(
+                                    userName:
+                                        "${pendingAccount.name} ${pendingAccount.lastName}",
+                                    onReject: (String reason) async {
+                                      await ref
+                                          .read(
+                                              pendingAccountsProvider.notifier)
+                                          .rejectPendingAccount(
+                                            id: pendingAccount.userId,
+                                            reason: reason,
+                                          );
+                                    },
+                                  ),
+                                );
                               },
                               isDesktop: isDesktop,
                             ),
