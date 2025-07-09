@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_emi_sistema/core/constants/constants.dart';
 import 'package:frontend_emi_sistema/features/docente/domain/entities/docente.dart';
 
 class DocenteImage extends StatelessWidget {
@@ -29,8 +30,9 @@ class DocenteImage extends StatelessWidget {
     // Verificar si el docente tiene foto
     if (docente.docenteImagePath != null &&
         docente.docenteImagePath!.isNotEmpty) {
+      // final String imageUrl = 'http://localhost:3000/uploads/docentes/${docente.docenteImagePath}';
       final String imageUrl =
-          'http://localhost:3000/uploads/docentes/${docente.docenteImagePath}';
+          '${Constants.baseUrl}uploads/docentes/${docente.docenteImagePath}';
 
       return CircleAvatar(
         radius: radius,

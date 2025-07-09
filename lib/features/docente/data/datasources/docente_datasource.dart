@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:frontend_emi_sistema/core/constants/constants.dart';
 import 'package:frontend_emi_sistema/core/error/exceptions.dart';
 import 'package:frontend_emi_sistema/core/preferences/preferences.dart';
 import 'package:frontend_emi_sistema/features/docente/data/models/docente_model.dart';
@@ -36,7 +37,8 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
     try {
       final authDio = _getDioWithAuth();
       final response = await authDio.get(
-        "http://localhost:3000/api/docente/me",
+        // "http://localhost:3000/api/docente/me",
+        "${Constants.baseUrl}api/docente/me",
       );
 
       print(
@@ -57,8 +59,10 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
   Future<List<CarreraModel>> getCarreras() async {
     try {
       final authDio = _getDioWithAuth();
-      final response =
-          await authDio.get('http://localhost:3000/api/docente/carreras');
+      final response = await authDio.get(
+        // 'http://localhost:3000/api/docente/carreras',
+        "${Constants.baseUrl}api/docente/carreras",
+      );
       final data = response.data as List;
       return data.map((json) => CarreraModel.fromJson(json)).toList();
     } catch (e) {
@@ -72,8 +76,10 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
     try {
       print("DocenteDatasource - Obteniendo todos los docentes");
       final authDio = _getDioWithAuth();
-      final response =
-          await authDio.get("http://localhost:3000/api/docente/all");
+      final response = await authDio.get(
+        // "http://localhost:3000/api/docente/all",
+        "${Constants.baseUrl}api/docente/all",
+      );
 
       print("DocenteDatasource - Respuesta del backend: ${response.data}");
 
@@ -102,7 +108,9 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
           "DocenteDatasource - Obteniendo estudios académicos para docente: $docenteId");
       final authDio = _getDioWithAuth();
       final response = await authDio.get(
-          "http://localhost:3000/api/docente/$docenteId/estudios-academicos");
+        // "http://localhost:3000/api/docente/$docenteId/estudios-academicos",
+        "${Constants.baseUrl}api/docente/$docenteId/estudios-academicos",
+      );
 
       print(
           "DocenteDatasource - Respuesta estudios académicos: ${response.data}");
@@ -132,7 +140,8 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
       print("DocenteDatasource - Actualizando perfil del docente");
       final authDio = _getDioWithAuth();
       final response = await authDio.put(
-        "http://localhost:3000/api/docente/me",
+        // "http://localhost:3000/api/docente/me",
+        "${Constants.baseUrl}api/docente/me",
         data: profileData,
       );
 
@@ -180,7 +189,8 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
       }
 
       final response = await authDio.post(
-        "http://localhost:3000/api/docente/photo",
+        // "http://localhost:3000/api/docente/photo",
+        "${Constants.baseUrl}api/docente/photo",
         data: formData,
       );
 

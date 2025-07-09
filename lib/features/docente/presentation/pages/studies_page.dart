@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend_emi_sistema/core/constants/constants.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/estudios_academicos_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/data/models/estudio_academico_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,8 +10,6 @@ import 'package:frontend_emi_sistema/features/docente/presentation/providers/doc
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider_state.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
 
 class StudiesPage extends ConsumerWidget {
   const StudiesPage({super.key});
@@ -282,21 +281,26 @@ class _StudyCard extends StatelessWidget {
               // ggg
               onPressed: () async {
                 try {
-                  final url = 'http://localhost:3000/uploads/estudios_academicos/${estudio.documentoUrl}';
-                  
+                  // final url = 'http://localhost:3000/uploads/estudios_academicos/${estudio.documentoUrl}';
+                  final url =
+                      "${Constants.baseUrl}uploads/estudios_academicos/${estudio.documentoUrl}";
+
                   if (await canLaunchUrl(Uri.parse(url))) {
-                    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                    await launchUrl(Uri.parse(url),
+                        mode: LaunchMode.externalApplication);
                   } else {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No se pudo abrir el documento')),
+                        const SnackBar(
+                            content: Text('No se pudo abrir el documento')),
                       );
                     }
                   }
                 } catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Error al acceder al documento')),
+                      const SnackBar(
+                          content: Text('Error al acceder al documento')),
                     );
                   }
                 }
@@ -374,8 +378,10 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
   Future<List<dynamic>> _getInstituciones() async {
     // Aquí deberías usar tu cliente http/dio y el token
     // Ejemplo simple:
-    final response =
-        await Dio().get('http://localhost:3000/api/docente/instituciones');
+    final response = await Dio().get(
+      // 'http://localhost:3000/api/docente/instituciones',
+      '${Constants.baseUrl}api/docente/instituciones',
+    );
     return response.data
         .map(
             (e) => {'id': int.parse(e['id'].toString()), 'nombre': e['nombre']})
@@ -383,8 +389,10 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
   }
 
   Future<List<dynamic>> _getGrados() async {
-    final response =
-        await Dio().get('http://localhost:3000/api/docente/grados-academicos');
+    final response = await Dio().get(
+      // 'http://localhost:3000/api/docente/grados-academicos',
+      '${Constants.baseUrl}api/docente/grados-academicos',
+    );
     return response.data
         .map(
             (e) => {'id': int.parse(e['id'].toString()), 'nombre': e['nombre']})
@@ -580,8 +588,10 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
       });
       print('FormData listo, enviando petición...');
       final response = await dio.post(
-          'http://localhost:3000/api/docente/estudios-academicos',
-          data: formData);
+        // 'http://localhost:3000/api/docente/estudios-academicos',
+        '${Constants.baseUrl}api/docente/estudios-academicos',
+        data: formData,
+      );
       print('Respuesta backend: \\${response.statusCode} - \\${response.data}');
       widget.onSuccess();
       if (mounted) Navigator.of(context).pop();

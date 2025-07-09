@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend_emi_sistema/core/constants/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/utils/show_details_panel_bottom_sheet.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider.dart';
@@ -18,7 +19,8 @@ class DocentesPage extends ConsumerWidget {
   Future<void> _downloadPdf(String documentoUrl) async {
     try {
       final url =
-          'http://localhost:3000/api/docente/estudios-academicos/$documentoUrl/pdf';
+          "${Constants.baseUrl}api/docente/estudios-academicos/$documentoUrl/pdf";
+      // 'http://localhost:3000/api/docente/estudios-academicos/$documentoUrl/pdf';
       final uri = Uri.parse(url);
 
       if (await canLaunchUrl(uri)) {
