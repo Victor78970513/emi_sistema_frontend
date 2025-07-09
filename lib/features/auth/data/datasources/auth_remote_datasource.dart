@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:frontend_emi_sistema/core/constants/constants.dart';
 import 'package:frontend_emi_sistema/core/error/exceptions.dart';
 import 'package:frontend_emi_sistema/core/preferences/preferences.dart';
 import 'package:frontend_emi_sistema/features/auth/data/models/user_model.dart';
@@ -28,7 +29,8 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       {required String email, required String password}) async {
     try {
       final response = await dio.post(
-        "http://localhost:3000/api/auth/login",
+        // "http://localhost:3000/api/auth/login",
+        "${Constants.baseUrl}api/auth/login",
         data: {
           "correo": email,
           "contraseña": password,
@@ -66,7 +68,8 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   }) async {
     try {
       final response = await dio.post(
-        "http://localhost:3000/api/auth/register",
+        // "http://localhost:3000/api/auth/register",
+        "${Constants.baseUrl}api/auth/register",
         data: {
           "nombres": nombres,
           "apellidos": apellidos,
@@ -93,7 +96,8 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     print("checkAuth - Iniciando verificación con token: $token");
     try {
       final response = await dio.post(
-        "http://localhost:3000/api/auth/checkAuth",
+        // "http://localhost:3000/api/auth/checkAuth",
+        "${Constants.baseUrl}api/auth/checkAuth",
         data: {"token": token},
       );
 

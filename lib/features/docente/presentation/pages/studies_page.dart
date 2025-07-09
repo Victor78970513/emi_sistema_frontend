@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend_emi_sistema/core/constants/constants.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/estudios_academicos_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/data/models/estudio_academico_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,14 +11,13 @@ import 'package:frontend_emi_sistema/features/docente/presentation/providers/doc
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
 class StudiesPage extends ConsumerWidget {
   const StudiesPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final estudiosState = ref.watch(estudiosAcademicosProvider);
+    final docenteState = ref.watch(docenteProvider);
     final isDesktop = MediaQuery.of(context).size.width > 1024;
     final isTablet = MediaQuery.of(context).size.width > 600 &&
         MediaQuery.of(context).size.width <= 1024;
@@ -27,6 +27,20 @@ class StudiesPage extends ConsumerWidget {
             ? 2
             : 1;
     final showFab = !isDesktop && !isTablet;
+
+    // Disparar carga de estudios si el estado es inicial
+    if (!(estudiosState is EstudiosAcademicosLoadingState) &&
+        !(estudiosState is EstudiosAcademicosSuccessState) &&
+        !(estudiosState is EstudiosAcademicosErrorState)) {
+      if (docenteState is DocenteSuccessState && docenteState.docente != null) {
+        final docenteId = docenteState.docente!.docenteId;
+        Future.microtask(() {
+          ref
+              .read(estudiosAcademicosProvider.notifier)
+              .getEstudiosAcademicos(docenteId: docenteId);
+        });
+      }
+    }
 
     return Container(
       color: const Color(0xFFF4F6FB), // Fondo general gris claro
@@ -104,14 +118,18 @@ class StudiesPage extends ConsumerWidget {
                     child: Builder(
                       builder: (context) {
                         if (estudiosState is EstudiosAcademicosLoadingState) {
+                          print('StudiesPage: Estado loading');
                           return const Center(
                               child: CircularProgressIndicator());
                         }
                         if (estudiosState is EstudiosAcademicosErrorState) {
+                          print('StudiesPage: Estado error');
                           return Center(
                               child: Text('Error al cargar estudios'));
                         }
                         if (estudiosState is EstudiosAcademicosSuccessState) {
+                          print(
+                              'StudiesPage: Estado success, estudios: [estudiosState.estudios.length]');
                           final estudios = estudiosState.estudios;
                           if (estudios.isEmpty) {
                             return _buildEmptyState();
@@ -132,7 +150,17 @@ class StudiesPage extends ConsumerWidget {
                           );
                         }
                         // Estado inicial o desconocido
-                        return const SizedBox.shrink();
+                        print('StudiesPage: Estado inicial o desconocido');
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(),
+                              SizedBox(height: 16),
+                              Text('Cargando estudios académicos...'),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ),
@@ -282,21 +310,26 @@ class _StudyCard extends StatelessWidget {
               // ggg
               onPressed: () async {
                 try {
-                  final url = 'http://localhost:3000/uploads/estudios_academicos/${estudio.documentoUrl}';
-                  
+                  // final url = 'http://localhost:3000/uploads/estudios_academicos/${estudio.documentoUrl}';
+                  final url =
+                      "${Constants.baseUrl}uploads/estudios_academicos/${estudio.documentoUrl}";
+
                   if (await canLaunchUrl(Uri.parse(url))) {
-                    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                    await launchUrl(Uri.parse(url),
+                        mode: LaunchMode.externalApplication);
                   } else {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No se pudo abrir el documento')),
+                        const SnackBar(
+                            content: Text('No se pudo abrir el documento')),
                       );
                     }
                   }
                 } catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Error al acceder al documento')),
+                      const SnackBar(
+                          content: Text('Error al acceder al documento')),
                     );
                   }
                 }
@@ -374,8 +407,10 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
   Future<List<dynamic>> _getInstituciones() async {
     // Aquí deberías usar tu cliente http/dio y el token
     // Ejemplo simple:
-    final response =
-        await Dio().get('http://localhost:3000/api/docente/instituciones');
+    final response = await Dio().get(
+      // 'http://localhost:3000/api/docente/instituciones',
+      '${Constants.baseUrl}api/docente/instituciones',
+    );
     return response.data
         .map(
             (e) => {'id': int.parse(e['id'].toString()), 'nombre': e['nombre']})
@@ -383,8 +418,10 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
   }
 
   Future<List<dynamic>> _getGrados() async {
-    final response =
-        await Dio().get('http://localhost:3000/api/docente/grados-academicos');
+    final response = await Dio().get(
+      // 'http://localhost:3000/api/docente/grados-academicos',
+      '${Constants.baseUrl}api/docente/grados-academicos',
+    );
     return response.data
         .map(
             (e) => {'id': int.parse(e['id'].toString()), 'nombre': e['nombre']})
@@ -580,8 +617,10 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
       });
       print('FormData listo, enviando petición...');
       final response = await dio.post(
-          'http://localhost:3000/api/docente/estudios-academicos',
-          data: formData);
+        // 'http://localhost:3000/api/docente/estudios-academicos',
+        '${Constants.baseUrl}api/docente/estudios-academicos',
+        data: formData,
+      );
       print('Respuesta backend: \\${response.statusCode} - \\${response.data}');
       widget.onSuccess();
       if (mounted) Navigator.of(context).pop();

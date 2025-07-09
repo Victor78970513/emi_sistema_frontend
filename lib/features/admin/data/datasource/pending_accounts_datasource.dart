@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:frontend_emi_sistema/core/constants/constants.dart';
 import 'package:frontend_emi_sistema/core/error/exceptions.dart';
 import 'package:frontend_emi_sistema/features/admin/data/models/pending_account_model.dart';
 
@@ -14,8 +15,10 @@ class PendingAccountsDatasourceImpl implements PendingAccountsDatasource {
   Future<List<PendingAccountModel>> getPendingAccounts() async {
     try {
       print("PendingAccountsDatasource - Obteniendo cuentas pendientes");
-      final response =
-          await dio.get("http://localhost:3000/api/admin/users/pending");
+      final response = await dio.get(
+        // "http://localhost:3000/api/admin/users/pending",
+        "${Constants.baseUrl}api/admin/users/pending",
+      );
 
       print(
           "PendingAccountsDatasource - Respuesta del backend: ${response.data}");
@@ -43,8 +46,10 @@ class PendingAccountsDatasourceImpl implements PendingAccountsDatasource {
   Future<bool> aprovePendingAccount({required int id}) async {
     try {
       print("PendingAccountsDatasource - Aprobando cuenta con ID: $id");
-      final response =
-          await dio.put("http://localhost:3000/api/admin/users/$id/approve");
+      final response = await dio.put(
+        // "http://localhost:3000/api/admin/users/$id/approve",
+        "${Constants.baseUrl}api/admin/users/$id/approve",
+      );
 
       print(
           "PendingAccountsDatasource - Respuesta de aprobación: ${response.data}");
@@ -77,7 +82,8 @@ class PendingAccountsDatasourceImpl implements PendingAccountsDatasource {
       print(
           "PendingAccountsDatasource - Rechazando cuenta con ID: $id, razón: $reason");
       final response = await dio.put(
-        "http://localhost:3000/api/admin/users/$id/reject",
+        // "http://localhost:3000/api/admin/users/$id/reject",
+        "${Constants.baseUrl}api/admin/users/$id/reject",
         data: {
           "reason": reason,
         },

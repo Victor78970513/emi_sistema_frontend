@@ -132,18 +132,18 @@ class _LateralNavigationBarState extends ConsumerState<LateralNavigationBar> {
                                   path: AppRoutes.pendingAccountsPage,
                                   index: 1,
                                 ),
-                                LateralNavigatorItem(
-                                  title: "Asignaturas",
-                                  icon: Icons.subject_rounded,
-                                  path: AppRoutes.pendingAccountsPage,
-                                  index: 2,
-                                ),
-                                LateralNavigatorItem(
-                                  title: "Horarios",
-                                  icon: Icons.insert_chart_outlined,
-                                  path: AppRoutes.pendingAccountsPage,
-                                  index: 3,
-                                ),
+                                // LateralNavigatorItem(
+                                //   title: "Asignaturas",
+                                //   icon: Icons.subject_rounded,
+                                //   path: AppRoutes.pendingAccountsPage,
+                                //   index: 2,
+                                // ),
+                                // LateralNavigatorItem(
+                                //   title: "Horarios",
+                                //   icon: Icons.insert_chart_outlined,
+                                //   path: AppRoutes.pendingAccountsPage,
+                                //   index: 3,
+                                // ),
 
                                 // Espacio flexible para empujar el logout hacia abajo
                                 Spacer(),
@@ -278,16 +278,16 @@ class MobileNavigationDrawer extends ConsumerWidget {
                     icon: Icons.app_registration_outlined,
                     path: AppRoutes.pendingAccountsPage,
                   ),
-                  DrawerItem(
-                    title: "Asignaturas",
-                    icon: Icons.subject_rounded,
-                    path: AppRoutes.pendingAccountsPage,
-                  ),
-                  DrawerItem(
-                    title: "Horarios",
-                    icon: Icons.insert_chart_outlined,
-                    path: AppRoutes.pendingAccountsPage,
-                  ),
+                  // DrawerItem(
+                  //   title: "Asignaturas",
+                  //   icon: Icons.subject_rounded,
+                  //   path: AppRoutes.pendingAccountsPage,
+                  // ),
+                  // DrawerItem(
+                  //   title: "Horarios",
+                  //   icon: Icons.insert_chart_outlined,
+                  //   path: AppRoutes.pendingAccountsPage,
+                  // ),
                 ],
               ),
             ),

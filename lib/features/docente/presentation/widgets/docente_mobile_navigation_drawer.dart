@@ -94,16 +94,16 @@ class DocenteMobileNavigationDrawer extends ConsumerWidget {
                     icon: Icons.school,
                     path: AppRoutes.studiesPage,
                   ),
-                  DrawerItem(
-                    title: "Asignaturas",
-                    icon: Icons.subject_rounded,
-                    path: AppRoutes.studiesPage,
-                  ),
-                  DrawerItem(
-                    title: "Horarios",
-                    icon: Icons.schedule,
-                    path: AppRoutes.studiesPage,
-                  ),
+                  // DrawerItem(
+                  //   title: "Asignaturas",
+                  //   icon: Icons.subject_rounded,
+                  //   path: AppRoutes.studiesPage,
+                  // ),
+                  // DrawerItem(
+                  //   title: "Horarios",
+                  //   icon: Icons.schedule,
+                  //   path: AppRoutes.studiesPage,
+                  // ),
                 ],
               ),
             ),
