@@ -46,7 +46,7 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: routerProvider,
-      title: 'Material App',
+      title: 'Sistema EMI',
     );
   }
 }
