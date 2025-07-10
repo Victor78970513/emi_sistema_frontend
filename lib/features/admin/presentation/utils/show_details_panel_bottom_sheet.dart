@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_emi_sistema/features/admin/presentation/widgets/panel_info_row.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend_emi_sistema/features/admin/presentation/widgets/info_row_widget.dart';
+import 'package:frontend_emi_sistema/features/admin/presentation/widgets/estudios_academicos_section_widget.dart';
 import 'package:frontend_emi_sistema/features/docente/domain/entities/docente.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/providers/estudios_academicos_provider.dart';
 
-void showDetailsPanelBottomSheet(BuildContext context, Docente docente) {
+void showDetallesPanelBottomSheet(
+    BuildContext context, Docente docente, WidgetRef ref) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    ref
+        .read(estudiosAcademicosProvider.notifier)
+        .getEstudiosAcademicos(docenteId: docente.docenteId);
+  });
+
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -68,7 +78,7 @@ void showDetailsPanelBottomSheet(BuildContext context, Docente docente) {
                         color: Colors.grey[50],
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Color(0xff2350ba).withOpacity(0.1),
+                          color: Color(0xff2350ba).withValues(alpha: 0.1),
                           width: 1,
                         ),
                       ),
@@ -79,7 +89,7 @@ void showDetailsPanelBottomSheet(BuildContext context, Docente docente) {
                             width: 80,
                             height: 80,
                             decoration: BoxDecoration(
-                              color: Color(0xff2350ba).withOpacity(0.15),
+                              color: Color(0xff2350ba).withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(40),
                             ),
                             child: Center(
@@ -123,8 +133,8 @@ void showDetailsPanelBottomSheet(BuildContext context, Docente docente) {
                                       horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
                                     color: docente.estadoNombre == 'aprobado'
-                                        ? Colors.green.withOpacity(0.1)
-                                        : Colors.orange.withOpacity(0.1),
+                                        ? Colors.green.withValues(alpha: 0.1)
+                                        : Colors.orange.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
                                       color: docente.estadoNombre == 'aprobado'
@@ -174,22 +184,25 @@ void showDetailsPanelBottomSheet(BuildContext context, Docente docente) {
                             ),
                           ),
                           SizedBox(height: 16),
-                          PanelInfoRow(label: 'Nombres', value: docente.names),
-                          PanelInfoRow(
+                          InfoRowWidget(label: 'Nombres', value: docente.names),
+                          InfoRowWidget(
                               label: 'Apellidos', value: docente.surnames),
-                          PanelInfoRow(
+                          InfoRowWidget(
                               label: 'ID Docente',
                               value: docente.docenteId.toString()),
                           if (docente.carreraNombre != null)
-                            PanelInfoRow(
+                            InfoRowWidget(
                                 label: 'Carrera',
                                 value: docente.carreraNombre!),
-                          PanelInfoRow(
+                          InfoRowWidget(
                               label: 'Estado',
                               value: docente.estadoNombre ?? 'No especificado'),
                         ],
                       ),
                     ),
+                    SizedBox(height: 24),
+                    // Estudios académicos
+                    EstudiosAcademicosSectionWidget(),
                     SizedBox(height: 24),
                     // Acciones
                     Container(

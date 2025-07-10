@@ -2,10 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend_emi_sistema/features/docente/data/datasources/docente_datasource.dart';
 import 'package:frontend_emi_sistema/features/docente/data/repositories/docente_repository_impl.dart';
 import 'package:frontend_emi_sistema/features/docente/data/models/carrera_model.dart';
-import 'package:frontend_emi_sistema/features/docente/domain/entities/docente.dart';
-import 'package:frontend_emi_sistema/features/docente/domain/repositories/docente_repository.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider_state.dart';
-import 'dart:io';
 
 final docenteDatasourceProvider = Provider<DocenteRemoteDatasource>((ref) {
   return DocenteRemoteDatasourceImpl();
@@ -44,11 +41,19 @@ class DocenteNotifier extends StateNotifier<DocenteState> {
   }
 
   Future<void> getAllDocentes() async {
+    print('DocenteNotifier: Iniciando getAllDocentes...');
     state = DocenteLoadingState();
     final result = await _repository.getAllDocentes();
     result.fold(
-      (failure) => state = DocenteErrorState(),
-      (docentes) => state = DocenteSuccessState(docentes: docentes),
+      (failure) {
+        print('DocenteNotifier: Error al obtener docentes: ${failure.message}');
+        state = DocenteErrorState();
+      },
+      (docentes) {
+        print(
+            'DocenteNotifier: Docentes obtenidos exitosamente: ${docentes.length} docentes');
+        state = DocenteSuccessState(docentes: docentes);
+      },
     );
   }
 

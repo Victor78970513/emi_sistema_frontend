@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/widgets/docente_lateral_navigation_bar.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/widgets/docente_mobile_navigation_drawer.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/estudios_academicos_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider_state.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/providers/carreras_asignadas_provider.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/providers/asignaturas_asignadas_provider.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/providers/asignaturas_disponibles_provider.dart';
 
 class DocenteHomePage extends ConsumerStatefulWidget {
   final Widget child;
@@ -20,7 +24,12 @@ class _DocenteHomePageState extends ConsumerState<DocenteHomePage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Cargar información personal del docente
       ref.read(docenteProvider.notifier).getPersonalInfo();
+
+      // Cargar carreras y asignaturas asignadas
+      await _loadCarrerasYAsignaturas();
+
       // Esperar a que se cargue el docente y luego cargar estudios académicos
       await Future.delayed(Duration(milliseconds: 300));
       final docenteState = ref.read(docenteProvider);
@@ -32,6 +41,35 @@ class _DocenteHomePageState extends ConsumerState<DocenteHomePage> {
       }
     });
     super.initState();
+  }
+
+  Future<void> _loadCarrerasYAsignaturas() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('userToken') ?? '';
+
+      if (token.isNotEmpty) {
+        // Cargar carreras asignadas
+        ref
+            .read(carrerasAsignadasProvider.notifier)
+            .getCarrerasAsignadas(token);
+
+        // Cargar asignaturas asignadas
+        ref
+            .read(asignaturasAsignadasProvider.notifier)
+            .getAsignaturasAsignadas(token);
+
+        // Cargar carreras disponibles (para postulación)
+        ref.invalidate(carrerasProvider);
+
+        // Cargar asignaturas disponibles (para postulación)
+        ref
+            .read(asignaturasDisponiblesProvider.notifier)
+            .getAsignaturasDisponibles(token);
+      }
+    } catch (e) {
+      print('Error al cargar carreras y asignaturas: $e');
+    }
   }
 
   @override

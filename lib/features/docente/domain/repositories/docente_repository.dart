@@ -3,7 +3,6 @@ import 'package:frontend_emi_sistema/core/error/failures.dart';
 import 'package:frontend_emi_sistema/features/docente/domain/entities/docente.dart';
 import 'package:frontend_emi_sistema/features/docente/data/models/carrera_model.dart';
 import 'package:frontend_emi_sistema/features/docente/data/models/estudio_academico_model.dart';
-import 'dart:io';
 
 abstract interface class DocenteRepository {
   Future<Either<Failure, Docente>> getPersonalInfor();

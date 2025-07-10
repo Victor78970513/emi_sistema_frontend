@@ -5,6 +5,7 @@ import 'package:frontend_emi_sistema/features/admin/presentation/providers/pendi
 import 'package:frontend_emi_sistema/features/admin/presentation/widgets/pending_account_widget.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/widgets/pending_accounts_header.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/widgets/reject_dialog.dart';
+import 'package:frontend_emi_sistema/features/admin/presentation/providers/admin_data_provider.dart';
 
 class PendingAccountsPage extends ConsumerWidget {
   const PendingAccountsPage({super.key});
@@ -293,9 +294,7 @@ class _MobilePendingAccountCard extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        ref
-                            .read(pendingAccountsProvider.notifier)
-                            .aprovePendingAccount(id: pendingAccount.userId);
+                        _aprobarCuenta(context, pendingAccount, ref);
                       },
                       child: Text(
                         "Aprobar",
@@ -338,13 +337,9 @@ class _MobilePendingAccountCard extends ConsumerWidget {
                           builder: (dialogContext) => RejectDialog(
                             userName:
                                 "${pendingAccount.name} ${pendingAccount.lastName}",
-                            onReject: (String reason) async {
-                              await ref
-                                  .read(pendingAccountsProvider.notifier)
-                                  .rejectPendingAccount(
-                                    id: pendingAccount.userId,
-                                    reason: reason,
-                                  );
+                            onReject: (String reason) {
+                              _rechazarCuenta(
+                                  context, pendingAccount, reason, ref);
                             },
                           ),
                         );
@@ -366,6 +361,32 @@ class _MobilePendingAccountCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _aprobarCuenta(
+      BuildContext context, dynamic pendingAccount, WidgetRef ref) {
+    print(
+        '_aprobarCuenta: Iniciando aprobación de cuenta ${pendingAccount.userId}');
+    // Ejecutar la acción con delay para ver el loading
+    Future.delayed(Duration(seconds: 2), () {
+      print('_aprobarCuenta: Ejecutando aprobación...');
+      ref
+          .read(pendingAccountsProvider.notifier)
+          .aprovePendingAccount(id: pendingAccount.userId);
+    });
+  }
+
+  void _rechazarCuenta(BuildContext context, dynamic pendingAccount,
+      String reason, WidgetRef ref) {
+    print(
+        '_rechazarCuenta: Iniciando rechazo de cuenta ${pendingAccount.userId}');
+    // Ejecutar la acción con delay para ver el loading
+    Future.delayed(Duration(seconds: 2), () {
+      print('_rechazarCuenta: Ejecutando rechazo...');
+      ref
+          .read(pendingAccountsProvider.notifier)
+          .rejectPendingAccount(id: pendingAccount.userId, reason: reason);
+    });
   }
 }
 

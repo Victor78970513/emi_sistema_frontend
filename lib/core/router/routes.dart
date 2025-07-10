@@ -10,6 +10,7 @@ class AppRoutes {
   // Admin routes
   static const String docentesPage = '/admin/docentes';
   static const String pendingAccountsPage = '/admin/pending-accounts';
+  static const String applicationsPage = '/admin/applications';
 
   // DocenteShell
   static const String docenteShell = '/docente';
@@ -17,4 +18,5 @@ class AppRoutes {
   // docente routes
   static const String personalInfoPage = '/docente/personal-info';
   static const String studiesPage = '/docente/studies';
+  static const String subjectsCarrersPage = '/docente/subjects-carrers';
 }

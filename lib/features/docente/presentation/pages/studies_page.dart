@@ -4,12 +4,10 @@ import 'package:frontend_emi_sistema/core/constants/constants.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/estudios_academicos_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/data/models/estudio_academico_model.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider_state.dart';
-import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/providers/estudios_academicos_form_provider.dart';
 
 class StudiesPage extends ConsumerWidget {
   const StudiesPage({super.key});
@@ -26,12 +24,12 @@ class StudiesPage extends ConsumerWidget {
         : isTablet
             ? 2
             : 1;
-    final showFab = !isDesktop && !isTablet;
+    final showFab = !isDesktop;
 
     // Disparar carga de estudios si el estado es inicial
-    if (!(estudiosState is EstudiosAcademicosLoadingState) &&
-        !(estudiosState is EstudiosAcademicosSuccessState) &&
-        !(estudiosState is EstudiosAcademicosErrorState)) {
+    if (estudiosState is! EstudiosAcademicosLoadingState &&
+        estudiosState is! EstudiosAcademicosSuccessState &&
+        estudiosState is! EstudiosAcademicosErrorState) {
       if (docenteState is DocenteSuccessState && docenteState.docente != null) {
         final docenteId = docenteState.docente!.docenteId;
         Future.microtask(() {
@@ -43,78 +41,166 @@ class StudiesPage extends ConsumerWidget {
     }
 
     return Container(
-      color: const Color(0xFFF4F6FB), // Fondo general gris claro
+      color: Colors.white,
       child: Stack(
         children: [
           Column(
             children: [
-              // HEADER VISUAL CON DEGRADADO
+              // Header elegante
               Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+                margin: EdgeInsets.symmetric(
+                  horizontal: isDesktop ? 24 : 16,
+                  vertical: isDesktop ? 24 : 12,
+                ),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Color(0xffE3F0FF), // azul muy suave
-                      Color(0xffF4F6FB), // gris claro
+                      Color(0xff2350ba).withValues(alpha: 0.1),
+                      Color(0xff2350ba).withValues(alpha: 0.05),
                     ],
                   ),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(28),
-                    bottomRight: Radius.circular(28),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Color(0xff2350ba).withValues(alpha: 0.2),
+                    width: 1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
                     ),
                   ],
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Mis Estudios Académicos',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff1A237E),
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                    if (isDesktop || isTablet)
-                      ElevatedButton.icon(
-                        onPressed: () => _showCreateStudyModal(context, ref),
-                        icon: const Icon(Icons.add, color: Colors.white),
-                        label: const Text('Crear Estudio'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff4A90E2),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 16),
-                          textStyle: const TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                padding: EdgeInsets.symmetric(
+                  horizontal: isDesktop ? 32 : 20,
+                  vertical: isDesktop ? 24 : 16,
+                ),
+                child: isDesktop
+                    ? Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Color(0xff2350ba),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.school_rounded,
+                              color: Colors.white,
+                              size: 28,
+                            ),
                           ),
-                        ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Mis Estudios Académicos",
+                                  style: TextStyle(
+                                    color: Color(0xff2350ba),
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  "Gestiona tu información académica y profesional",
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (isDesktop)
+                            ElevatedButton.icon(
+                              onPressed: () =>
+                                  _showCreateStudyModal(context, ref),
+                              icon: Icon(Icons.add,
+                                  color: Colors.white, size: 20),
+                              label: Text(
+                                'Crear Estudio',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xff2350ba),
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 2,
+                              ),
+                            ),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Color(0xff2350ba),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  Icons.school_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  "Mis Estudios Académicos",
+                                  style: TextStyle(
+                                    color: Color(0xff2350ba),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ),
+                              // El botón se elimina en móviles/tablets para usar solo el FAB
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            "Gestiona tu información académica y profesional",
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
                       ),
-                  ],
-                ),
               ),
               // CONTENIDO PRINCIPAL
               Expanded(
                 child: Container(
                   color: Colors.transparent,
                   child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isDesktop ? 24 : 16,
+                      vertical: 16,
+                    ),
                     child: Builder(
                       builder: (context) {
                         if (estudiosState is EstudiosAcademicosLoadingState) {
@@ -129,7 +215,7 @@ class StudiesPage extends ConsumerWidget {
                         }
                         if (estudiosState is EstudiosAcademicosSuccessState) {
                           print(
-                              'StudiesPage: Estado success, estudios: [estudiosState.estudios.length]');
+                              'StudiesPage: Estado success, estudios: ${estudiosState.estudios.length}');
                           final estudios = estudiosState.estudios;
                           if (estudios.isEmpty) {
                             return _buildEmptyState();
@@ -176,7 +262,7 @@ class StudiesPage extends ConsumerWidget {
                 onPressed: () => _showCreateStudyModal(context, ref),
                 icon: const Icon(Icons.add),
                 label: const Text('Nuevo Estudio'),
-                backgroundColor: const Color(0xff4A90E2),
+                backgroundColor: const Color(0xff2350ba),
                 foregroundColor: Colors.white,
                 elevation: 4,
               ),
@@ -213,6 +299,7 @@ class StudiesPage extends ConsumerWidget {
           const Text(
             'Aún no tienes estudios académicos registrados.',
             style: TextStyle(fontSize: 18, color: Colors.black54),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -240,7 +327,7 @@ class _StudyCard extends StatelessWidget {
         border: Border.all(color: Color(0xffB3D1F7), width: 1.2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),
@@ -274,7 +361,7 @@ class _StudyCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            estudio.institucionNombre ?? 'Sin institución',
+            estudio.institucionNombre,
             style: const TextStyle(fontSize: 15, color: Color(0xff4A5A6A)),
             textAlign: TextAlign.center,
           ),
@@ -283,7 +370,7 @@ class _StudyCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Chip(
-                label: Text(estudio.gradoAcademicoNombre ?? 'Sin grado'),
+                label: Text(estudio.gradoAcademicoNombre),
                 backgroundColor: const Color(0xffE3F2FD),
                 labelStyle: const TextStyle(color: Color(0xff1976D2)),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -295,7 +382,7 @@ class _StudyCard extends StatelessWidget {
                       size: 18, color: Color(0xff4A90E2)),
                   const SizedBox(width: 4),
                   Text(
-                    estudio.anioTitulacion?.toString() ?? '-',
+                    estudio.anioTitulacion.toString(),
                     style:
                         const TextStyle(fontSize: 15, color: Color(0xff1A237E)),
                   ),
@@ -307,10 +394,8 @@ class _StudyCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              // ggg
               onPressed: () async {
                 try {
-                  // final url = 'http://localhost:3000/uploads/estudios_academicos/${estudio.documentoUrl}';
                   final url =
                       "${Constants.baseUrl}uploads/estudios_academicos/${estudio.documentoUrl}";
 
@@ -359,15 +444,15 @@ class _StudyCard extends StatelessWidget {
 }
 
 // --- Dialogo de creación ---
-class _CreateStudyDialog extends StatefulWidget {
+class _CreateStudyDialog extends ConsumerStatefulWidget {
   final VoidCallback onSuccess;
   const _CreateStudyDialog({required this.onSuccess});
 
   @override
-  State<_CreateStudyDialog> createState() => _CreateStudyDialogState();
+  ConsumerState<_CreateStudyDialog> createState() => _CreateStudyDialogState();
 }
 
-class _CreateStudyDialogState extends State<_CreateStudyDialog> {
+class _CreateStudyDialogState extends ConsumerState<_CreateStudyDialog> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _anioController = TextEditingController();
@@ -375,57 +460,14 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
   int? _gradoId;
   String? _pdfName;
   dynamic _pdfFile;
-  bool _loading = false;
-  List<dynamic> _instituciones = [];
-  List<dynamic> _grados = [];
-  String? _error;
 
   @override
   void initState() {
     super.initState();
-    _fetchData();
-  }
-
-  Future<void> _fetchData() async {
-    setState(() => _loading = true);
-    try {
-      final instituciones = await _getInstituciones();
-      final grados = await _getGrados();
-      setState(() {
-        _instituciones = instituciones;
-        _grados = grados;
-        _loading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = 'Error al cargar datos';
-        _loading = false;
-      });
-    }
-  }
-
-  Future<List<dynamic>> _getInstituciones() async {
-    // Aquí deberías usar tu cliente http/dio y el token
-    // Ejemplo simple:
-    final response = await Dio().get(
-      // 'http://localhost:3000/api/docente/instituciones',
-      '${Constants.baseUrl}api/docente/instituciones',
-    );
-    return response.data
-        .map(
-            (e) => {'id': int.parse(e['id'].toString()), 'nombre': e['nombre']})
-        .toList();
-  }
-
-  Future<List<dynamic>> _getGrados() async {
-    final response = await Dio().get(
-      // 'http://localhost:3000/api/docente/grados-academicos',
-      '${Constants.baseUrl}api/docente/grados-academicos',
-    );
-    return response.data
-        .map(
-            (e) => {'id': int.parse(e['id'].toString()), 'nombre': e['nombre']})
-        .toList();
+    // Cargar datos al inicializar
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(estudiosAcademicosFormProvider.notifier).fetchAllData();
+    });
   }
 
   Future<void> _pickPDF() async {
@@ -441,13 +483,15 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final formState = ref.watch(estudiosAcademicosFormProvider);
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(24),
           width: 400,
-          child: _loading
+          child: formState.instituciones.isLoading || formState.grados.isLoading
               ? const Center(child: CircularProgressIndicator())
               : Form(
                   key: _formKey,
@@ -476,12 +520,17 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
                       const SizedBox(height: 16),
                       DropdownButtonFormField<int>(
                         value: _institucionId,
-                        items: _instituciones
-                            .map<DropdownMenuItem<int>>((e) => DropdownMenuItem(
-                                  value: e['id'],
-                                  child: Text(e['nombre']),
-                                ))
-                            .toList(),
+                        items: formState.instituciones.when(
+                          data: (instituciones) => instituciones
+                              .map<DropdownMenuItem<int>>(
+                                  (institucion) => DropdownMenuItem(
+                                        value: institucion.id,
+                                        child: Text(institucion.nombre),
+                                      ))
+                              .toList(),
+                          loading: () => [],
+                          error: (_, __) => [],
+                        ),
                         onChanged: (v) => setState(() => _institucionId = v),
                         decoration: const InputDecoration(
                           labelText: 'Institución',
@@ -493,12 +542,17 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
                       const SizedBox(height: 16),
                       DropdownButtonFormField<int>(
                         value: _gradoId,
-                        items: _grados
-                            .map<DropdownMenuItem<int>>((e) => DropdownMenuItem(
-                                  value: e['id'],
-                                  child: Text(e['nombre']),
-                                ))
-                            .toList(),
+                        items: formState.grados.when(
+                          data: (grados) => grados
+                              .map<DropdownMenuItem<int>>(
+                                  (grado) => DropdownMenuItem(
+                                        value: grado.id,
+                                        child: Text(grado.nombre),
+                                      ))
+                              .toList(),
+                          loading: () => [],
+                          error: (_, __) => [],
+                        ),
                         onChanged: (v) => setState(() => _gradoId = v),
                         decoration: const InputDecoration(
                           labelText: 'Grado Académico',
@@ -516,13 +570,15 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
                           border: OutlineInputBorder(),
                         ),
                         validator: (v) {
-                          if (v == null || v.trim().isEmpty)
+                          if (v == null || v.trim().isEmpty) {
                             return 'Campo requerido';
+                          }
                           final n = int.tryParse(v);
                           if (n == null ||
                               n < 1900 ||
-                              n > DateTime.now().year + 1)
+                              n > DateTime.now().year + 1) {
                             return 'Año inválido';
+                          }
                           return null;
                         },
                       ),
@@ -544,10 +600,14 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
                             ),
                         ],
                       ),
-                      if (_error != null) ...[
+                      if (formState.submitState
+                          is EstudiosAcademicosFormError) ...[
                         const SizedBox(height: 12),
-                        Text(_error!,
-                            style: const TextStyle(color: Colors.red)),
+                        Text(
+                          (formState.submitState as EstudiosAcademicosFormError)
+                              .message,
+                          style: const TextStyle(color: Colors.red),
+                        ),
                       ],
                       const SizedBox(height: 24),
                       Row(
@@ -559,12 +619,26 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
                           ),
                           const SizedBox(width: 12),
                           ElevatedButton(
-                            onPressed: _loading ? null : _submit,
+                            onPressed: formState.submitState
+                                    is EstudiosAcademicosFormLoading
+                                ? null
+                                : _submit,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xff4A90E2),
                               foregroundColor: Colors.white,
                             ),
-                            child: const Text('Guardar'),
+                            child: formState.submitState
+                                    is EstudiosAcademicosFormLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                    ),
+                                  )
+                                : const Text('Guardar'),
                           ),
                         ],
                       )
@@ -583,56 +657,42 @@ class _CreateStudyDialogState extends State<_CreateStudyDialog> {
     super.dispose();
   }
 
-  @override
   Future<void> _submit() async {
     print('--- Enviando formulario de estudio académico ---');
-    print('Título: \\${_tituloController.text}');
-    print('Institución: \\$_institucionId');
-    print('Grado: \\$_gradoId');
-    print('Año: \\${_anioController.text}');
-    print('PDF: \\$_pdfName');
+    print('Título: ${_tituloController.text}');
+    print('Institución: $_institucionId');
+    print('Grado: $_gradoId');
+    print('Año: ${_anioController.text}');
+    print('PDF: $_pdfName');
+
     if (!_formKey.currentState!.validate() ||
         _institucionId == null ||
         _gradoId == null ||
         _pdfFile == null) {
-      setState(() => _error = 'Completa todos los campos y adjunta el PDF');
-      print('Validación fallida');
       return;
     }
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('userToken') ?? '';
-      final dio = Dio();
-      dio.options.headers['Authorization'] = 'Bearer $token';
-      final formData = FormData.fromMap({
-        'titulo': _tituloController.text.trim(),
-        'institucion_id': _institucionId,
-        'grado_academico_id': _gradoId,
-        'año_titulacion': int.tryParse(_anioController.text.trim()),
-        'documento': MultipartFile.fromBytes(_pdfFile, filename: _pdfName),
-      });
-      print('FormData listo, enviando petición...');
-      final response = await dio.post(
-        // 'http://localhost:3000/api/docente/estudios-academicos',
-        '${Constants.baseUrl}api/docente/estudios-academicos',
-        data: formData,
-      );
-      print('Respuesta backend: \\${response.statusCode} - \\${response.data}');
-      widget.onSuccess();
-      if (mounted) Navigator.of(context).pop();
-    } catch (e) {
-      if (e is DioException && e.response != null) {
-        print('Error backend: \\${e.response?.data}');
+      await ref
+          .read(estudiosAcademicosFormProvider.notifier)
+          .submitEstudioAcademico(
+            titulo: _tituloController.text.trim(),
+            institucionId: _institucionId!,
+            gradoId: _gradoId!,
+            anioTitulacion: int.tryParse(_anioController.text.trim())!,
+            pdfBytes: _pdfFile,
+            pdfName: _pdfName!,
+          );
+
+      final currentState = ref.read(estudiosAcademicosFormProvider).submitState;
+      if (currentState is EstudiosAcademicosFormSuccess) {
+        widget.onSuccess();
+        if (mounted) Navigator.of(context).pop();
+        // Resetear el estado del submit
+        ref.read(estudiosAcademicosFormProvider.notifier).resetSubmitState();
       }
-      print('Error al guardar: \\$e');
-      setState(() {
-        _error = 'Error al guardar. Intenta nuevamente.';
-        _loading = false;
-      });
+    } catch (e) {
+      print('Error al guardar: $e');
     }
   }
 }

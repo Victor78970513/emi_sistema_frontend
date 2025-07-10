@@ -7,8 +7,6 @@ import 'package:frontend_emi_sistema/features/docente/data/models/carrera_model.
 import 'package:frontend_emi_sistema/features/docente/data/models/estudio_academico_model.dart';
 import 'package:frontend_emi_sistema/features/docente/domain/entities/docente.dart';
 import 'package:frontend_emi_sistema/features/docente/domain/repositories/docente_repository.dart';
-import 'package:frontend_emi_sistema/features/docente/data/models/docente_model.dart';
-import 'dart:io';
 
 class DocenteRepositoryImpl implements DocenteRepository {
   final DocenteRemoteDatasource docenteDatasource;
@@ -20,7 +18,7 @@ class DocenteRepositoryImpl implements DocenteRepository {
     try {
       final response = await docenteDatasource.getPersonalInfor();
       return right(response);
-    } on DioError {
+    } on DioException {
       return left(NetworkFailure('No se pudo conectar al servidor'));
     } catch (e) {
       return left(ServerFailure(e.toString()));
@@ -32,7 +30,7 @@ class DocenteRepositoryImpl implements DocenteRepository {
     try {
       final response = await docenteDatasource.getCarreras();
       return right(response);
-    } on DioError {
+    } on DioException {
       return left(NetworkFailure('No se pudo conectar al servidor'));
     } catch (e) {
       return left(ServerFailure(e.toString()));
@@ -44,7 +42,7 @@ class DocenteRepositoryImpl implements DocenteRepository {
     try {
       final response = await docenteDatasource.getAllDocentes();
       return right(response);
-    } on DioError {
+    } on DioException {
       return left(NetworkFailure('No se pudo conectar al servidor'));
     } catch (e) {
       return left(ServerFailure(e.toString()));
@@ -58,7 +56,7 @@ class DocenteRepositoryImpl implements DocenteRepository {
       final response =
           await docenteDatasource.getEstudiosAcademicos(docenteId: docenteId);
       return right(response);
-    } on DioError {
+    } on DioException {
       return left(NetworkFailure('No se pudo conectar al servidor'));
     } catch (e) {
       return left(ServerFailure(e.toString()));

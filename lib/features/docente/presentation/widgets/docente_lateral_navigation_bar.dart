@@ -116,63 +116,61 @@ class _DocenteLateralNavigationBarState
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: !isExpanded
-                        ? Container(
-                            child: Column(
-                              children: [
-                                // Elementos principales
-                                LateralNavigatorItem(
-                                  index: 0,
-                                  title: "Información Personal",
-                                  icon: Icons.people,
-                                  path: AppRoutes.personalInfoPage,
-                                ),
-                                LateralNavigatorItem(
-                                  title: "Estudios",
-                                  icon: Icons.school,
-                                  path: AppRoutes.studiesPage,
-                                  index: 1,
-                                ),
-                                // LateralNavigatorItem(
-                                //   title: "Asignaturas",
-                                //   icon: Icons.subject_rounded,
-                                //   path: AppRoutes.studiesPage,
-                                //   index: 2,
-                                // ),
-                                // LateralNavigatorItem(
-                                //   title: "Horarios",
-                                //   icon: Icons.schedule,
-                                //   path: AppRoutes.studiesPage,
-                                //   index: 3,
-                                // ),
+                        ? Column(
+                            children: [
+                              // Elementos principales
+                              LateralNavigatorItem(
+                                index: 0,
+                                title: "Información Personal",
+                                icon: Icons.people,
+                                path: AppRoutes.personalInfoPage,
+                              ),
+                              LateralNavigatorItem(
+                                title: "Estudios",
+                                icon: Icons.school,
+                                path: AppRoutes.studiesPage,
+                                index: 1,
+                              ),
+                              LateralNavigatorItem(
+                                title: "Asignaturas y Carreras",
+                                icon: Icons.subject_rounded,
+                                path: AppRoutes.subjectsCarrersPage,
+                                index: 2,
+                              ),
+                              // LateralNavigatorItem(
+                              //   title: "Horarios",
+                              //   icon: Icons.schedule,
+                              //   path: AppRoutes.studiesPage,
+                              //   index: 3,
+                              // ),
 
-                                // Espacio flexible para empujar el logout hacia abajo
-                                Spacer(),
+                              // Espacio flexible para empujar el logout hacia abajo
+                              Spacer(),
 
-                                // Separador
-                                Container(
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 4),
-                                  height: 1,
-                                  color:
-                                      Color(0xff2350ba).withValues(alpha: 0.1),
-                                ),
+                              // Separador
+                              Container(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 4),
+                                height: 1,
+                                color: Color(0xff2350ba).withValues(alpha: 0.1),
+                              ),
 
-                                // Botón de cerrar sesión
-                                LateralNavigatorItem(
-                                  title: "Cerrar Sesión",
-                                  icon: Icons.logout,
-                                  path: AppRoutes.loginPage,
-                                  onTap: () async {
-                                    await ref
-                                        .read(authProvider.notifier)
-                                        .logOut();
-                                    context.go(AppRoutes.loginPage);
-                                  },
-                                  index: 4,
-                                ),
-                                SizedBox(height: 8),
-                              ],
-                            ),
+                              // Botón de cerrar sesión
+                              LateralNavigatorItem(
+                                title: "Cerrar Sesión",
+                                icon: Icons.logout,
+                                path: AppRoutes.loginPage,
+                                onTap: () async {
+                                  await ref
+                                      .read(authProvider.notifier)
+                                      .logOut();
+                                  // ignore: use_build_context_synchronously
+                                  context.go(AppRoutes.loginPage);
+                                },
+                                index: 4,
+                              ),
+                              SizedBox(height: 8),
+                            ],
                           )
                         : null,
                   ),

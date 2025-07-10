@@ -37,7 +37,7 @@ class DocenteImage extends StatelessWidget {
       return CircleAvatar(
         radius: radius,
         backgroundImage: NetworkImage(imageUrl),
-        backgroundColor: colorScheme.primary.withOpacity(0.1),
+        backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
         onBackgroundImageError: (exception, stackTrace) {
           print('Error cargando imagen del docente: $exception');
         },
@@ -46,7 +46,7 @@ class DocenteImage extends StatelessWidget {
 
     return CircleAvatar(
       radius: radius,
-      backgroundColor: colorScheme.primary.withOpacity(0.2),
+      backgroundColor: colorScheme.primary.withValues(alpha: 0.2),
       child: Text(
         initials,
         style: TextStyle(

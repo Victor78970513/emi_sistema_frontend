@@ -3,12 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider_state.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/widgets/docente_image.dart';
-import 'package:frontend_emi_sistema/features/docente/presentation/widgets/personal_info_header.dart';
-import 'package:frontend_emi_sistema/features/docente/presentation/widgets/personal_information_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'dart:typed_data';
 
 class PersonalInfoPage extends ConsumerStatefulWidget {
   const PersonalInfoPage({super.key});
@@ -175,7 +172,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: Offset(0, 2),
                   ),
@@ -216,7 +213,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: Offset(0, 2),
               ),
@@ -228,7 +225,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: Icon(
@@ -273,7 +270,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: Offset(0, 2),
               ),
@@ -285,7 +282,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: Icon(
@@ -349,30 +346,9 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
   }
 
   Widget _buildMobileLayout(BuildContext context, docente) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Color(0xff4A90E2),
-        elevation: 0,
-        title: Text(
-          'Información Personal',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.edit, color: Colors.white),
-            onPressed: () => _showEditProfileModal(context, docente),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
+    return Container(
+      color: Colors.grey[50],
+      child: SingleChildScrollView(
         child: Column(
           children: [
             // Header con gradiente
@@ -410,7 +386,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                         docente.surnames,
                         style: TextStyle(
                           fontSize: 18,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -419,10 +395,10 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.white.withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
@@ -454,7 +430,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: Offset(0, 2),
                         ),
@@ -558,7 +534,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Color(0xff4A90E2).withOpacity(0.3),
+            color: Color(0xff4A90E2).withValues(alpha: 0.3),
             blurRadius: 20,
             offset: Offset(0, 10),
           ),
@@ -583,7 +559,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
             docente.surnames,
             style: TextStyle(
               fontSize: isDesktop ? 18 : 16,
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
             ),
             textAlign: TextAlign.center,
           ),
@@ -591,10 +567,10 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
                 width: 1,
               ),
             ),
@@ -654,10 +630,10 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
@@ -667,14 +643,14 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                   children: [
                     Icon(
                       Icons.info_outline,
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       size: 16,
                     ),
                     SizedBox(width: 8),
                     Text(
                       'Información del Perfil',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -694,7 +670,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
 
   Widget _buildActionButton(
       String text, IconData icon, VoidCallback onPressed, bool isDesktop) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: onPressed,
@@ -707,14 +683,14 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white.withOpacity(0.2),
+          backgroundColor: Colors.white.withValues(alpha: 0.2),
           foregroundColor: Colors.white,
           elevation: 0,
           padding: EdgeInsets.symmetric(vertical: isDesktop ? 16 : 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -725,7 +701,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
 
   Widget _buildMobileActionButton(
       String text, IconData icon, VoidCallback onPressed) {
-    return Container(
+    return SizedBox(
       height: 60,
       child: ElevatedButton.icon(
         onPressed: onPressed,
@@ -802,7 +778,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                           Container(
                             padding: EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
@@ -828,7 +804,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                                 Text(
                                   'Actualiza tu información personal',
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.9),
+                                    color: Colors.white.withValues(alpha: 0.9),
                                     fontSize: 14,
                                   ),
                                 ),
@@ -996,7 +972,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
             Container(
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Color(0xff4A90E2).withOpacity(0.1),
+                color: Color(0xff4A90E2).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -1061,7 +1037,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
             Container(
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Color(0xff4A90E2).withOpacity(0.1),
+                color: Color(0xff4A90E2).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -1136,7 +1112,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
             Container(
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Color(0xff4A90E2).withOpacity(0.1),
+                color: Color(0xff4A90E2).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -1216,7 +1192,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
             child: Text(
               label,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 11,
               ),
             ),
@@ -1240,7 +1216,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
         Container(
           padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Color(0xff4A90E2).withOpacity(0.1),
+            color: Color(0xff4A90E2).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
@@ -1270,7 +1246,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: Offset(0, 2),
           ),
@@ -1318,7 +1294,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           Container(
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
@@ -1365,7 +1341,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: Offset(0, 2),
           ),
@@ -1400,10 +1376,10 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.2),
+          color: color.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -1412,7 +1388,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -1459,7 +1435,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: Offset(0, 2),
           ),

@@ -116,66 +116,64 @@ class _LateralNavigationBarState extends ConsumerState<LateralNavigationBar> {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: !isExpanded
-                        ? Container(
-                            child: Column(
-                              children: [
-                                // Elementos principales
-                                LateralNavigatorItem(
-                                  index: 0,
-                                  title: "Docentes",
-                                  icon: Icons.people,
-                                  path: AppRoutes.docentesPage,
-                                ),
-                                LateralNavigatorItem(
-                                  title: "Solicitud de Registros",
-                                  icon: Icons.app_registration_outlined,
-                                  path: AppRoutes.pendingAccountsPage,
-                                  index: 1,
-                                ),
-                                // LateralNavigatorItem(
-                                //   title: "Asignaturas",
-                                //   icon: Icons.subject_rounded,
-                                //   path: AppRoutes.pendingAccountsPage,
-                                //   index: 2,
-                                // ),
-                                // LateralNavigatorItem(
-                                //   title: "Horarios",
-                                //   icon: Icons.insert_chart_outlined,
-                                //   path: AppRoutes.pendingAccountsPage,
-                                //   index: 3,
-                                // ),
+                        ? Column(
+                            children: [
+                              // Elementos principales
+                              LateralNavigatorItem(
+                                index: 0,
+                                title: "Docentes",
+                                icon: Icons.people,
+                                path: AppRoutes.docentesPage,
+                              ),
+                              LateralNavigatorItem(
+                                title: "Solicitud de Registros",
+                                icon: Icons.app_registration_outlined,
+                                path: AppRoutes.pendingAccountsPage,
+                                index: 1,
+                              ),
+                              LateralNavigatorItem(
+                                title: "Postulaciones",
+                                icon: Icons.fact_check,
+                                path: AppRoutes.applicationsPage,
+                                index: 2,
+                              ),
+                              // LateralNavigatorItem(
+                              //   title: "Horarios",
+                              //   icon: Icons.insert_chart_outlined,
+                              //   path: AppRoutes.pendingAccountsPage,
+                              //   index: 3,
+                              // ),
 
-                                // Espacio flexible para empujar el logout hacia abajo
-                                Spacer(),
+                              // Espacio flexible para empujar el logout hacia abajo
+                              Spacer(),
 
-                                // Separador
-                                Container(
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 4), // Reducir vertical de 8 a 4
-                                  height: 1,
-                                  color:
-                                      Color(0xff2350ba).withValues(alpha: 0.1),
-                                ),
+                              // Separador
+                              Container(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 4), // Reducir vertical de 8 a 4
+                                height: 1,
+                                color: Color(0xff2350ba).withValues(alpha: 0.1),
+                              ),
 
-                                // Botón de cerrar sesión
-                                LateralNavigatorItem(
-                                  title: "Cerrar Sesión",
-                                  icon: Icons.logout,
-                                  path: AppRoutes.loginPage,
-                                  onTap: () async {
-                                    await ref
-                                        .read(authProvider.notifier)
-                                        .logOut();
-                                    context.go(AppRoutes.loginPage);
-                                  },
-                                  index: 4,
-                                ),
-                                SizedBox(
-                                    height:
-                                        8), // Reducir de 16 a 8 para evitar overflow
-                              ],
-                            ),
+                              // Botón de cerrar sesión
+                              LateralNavigatorItem(
+                                title: "Cerrar Sesión",
+                                icon: Icons.logout,
+                                path: AppRoutes.loginPage,
+                                onTap: () async {
+                                  await ref
+                                      .read(authProvider.notifier)
+                                      .logOut();
+                                  // ignore: use_build_context_synchronously
+                                  context.go(AppRoutes.loginPage);
+                                },
+                                index: 4,
+                              ),
+                              SizedBox(
+                                  height:
+                                      8), // Reducir de 16 a 8 para evitar overflow
+                            ],
                           )
                         : null,
                   ),
@@ -278,11 +276,11 @@ class MobileNavigationDrawer extends ConsumerWidget {
                     icon: Icons.app_registration_outlined,
                     path: AppRoutes.pendingAccountsPage,
                   ),
-                  // DrawerItem(
-                  //   title: "Asignaturas",
-                  //   icon: Icons.subject_rounded,
-                  //   path: AppRoutes.pendingAccountsPage,
-                  // ),
+                  DrawerItem(
+                    title: "Postulaciones",
+                    icon: Icons.fact_check,
+                    path: AppRoutes.applicationsPage,
+                  ),
                   // DrawerItem(
                   //   title: "Horarios",
                   //   icon: Icons.insert_chart_outlined,
@@ -326,6 +324,7 @@ class MobileNavigationDrawer extends ConsumerWidget {
                 ),
                 onTap: () async {
                   await ref.read(authProvider.notifier).logOut();
+                  // ignore: use_build_context_synchronously
                   context.go(AppRoutes.loginPage);
                 },
               ),

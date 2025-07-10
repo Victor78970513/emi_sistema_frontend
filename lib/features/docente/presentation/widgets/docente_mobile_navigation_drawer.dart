@@ -94,11 +94,11 @@ class DocenteMobileNavigationDrawer extends ConsumerWidget {
                     icon: Icons.school,
                     path: AppRoutes.studiesPage,
                   ),
-                  // DrawerItem(
-                  //   title: "Asignaturas",
-                  //   icon: Icons.subject_rounded,
-                  //   path: AppRoutes.studiesPage,
-                  // ),
+                  DrawerItem(
+                    title: "Asignaturas y Carreras",
+                    icon: Icons.subject_rounded,
+                    path: AppRoutes.subjectsCarrersPage,
+                  ),
                   // DrawerItem(
                   //   title: "Horarios",
                   //   icon: Icons.schedule,
@@ -142,6 +142,7 @@ class DocenteMobileNavigationDrawer extends ConsumerWidget {
                 ),
                 onTap: () async {
                   await ref.read(authProvider.notifier).logOut();
+                  // ignore: use_build_context_synchronously
                   context.go(AppRoutes.loginPage);
                 },
               ),

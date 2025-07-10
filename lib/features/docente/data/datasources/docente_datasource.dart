@@ -5,8 +5,6 @@ import 'package:frontend_emi_sistema/core/preferences/preferences.dart';
 import 'package:frontend_emi_sistema/features/docente/data/models/docente_model.dart';
 import 'package:frontend_emi_sistema/features/docente/data/models/carrera_model.dart';
 import 'package:frontend_emi_sistema/features/docente/data/models/estudio_academico_model.dart';
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 abstract class DocenteRemoteDatasource {
