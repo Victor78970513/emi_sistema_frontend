@@ -245,12 +245,29 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
               ),
               SizedBox(height: 8),
               Text(
-                'No se pudo obtener la información personal',
+                'No se pudo obtener la información personal.\nVerifique su conexión e intente nuevamente.',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],
                 ),
                 textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () {
+                  // Recargar la información personal
+                  ref.read(docenteProvider.notifier).reloadPersonalInfo();
+                },
+                icon: Icon(Icons.refresh, color: Colors.white),
+                label: Text('Reintentar'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xff4A90E2),
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
               ),
             ],
           ),
@@ -603,26 +620,24 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
             },
             isDesktop,
           ),
-          SizedBox(height: 12),
-          _buildActionButton(
-            'Ver Estudios',
-            Icons.school,
-            () {
-              // TODO: Navegar a estudios
-              print('Ver estudios');
-            },
-            isDesktop,
-          ),
-          SizedBox(height: 12),
-          _buildActionButton(
-            'Descargar CV',
-            Icons.download,
-            () {
-              // TODO: Implementar descarga de CV
-              print('Descargar CV');
-            },
-            isDesktop,
-          ),
+          // SizedBox(height: 12),
+          // _buildActionButton(
+          //   'Ver Estudios',
+          //   Icons.school,
+          //   () {
+          //     context.go(AppRoutes.studiesPage);
+          //   },
+          //   isDesktop,
+          // ),
+          // SizedBox(height: 12),
+          // _buildActionButton(
+          //   'Descargar CV',
+          //   Icons.download,
+          //   () {TODO: Implementar descarga de CV
+          //     print('Descargar CV');
+          //   },
+          //   isDesktop,
+          // ),
 
           Spacer(),
 
@@ -1254,29 +1269,32 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
       ),
       child: Column(
         children: [
-          _buildInfoRow('Email', docente.email, Icons.email, Colors.blue),
+          _buildInfoRow('Email', docente.correoElectronico ?? 'No especificado',
+              Icons.email, Colors.blue),
           _buildInfoRow(
               'Carnet de Identidad',
-              docente.identificationCard.isNotEmpty
-                  ? docente.identificationCard
+              docente.carnetIdentidad?.isNotEmpty == true
+                  ? docente.carnetIdentidad!
                   : 'No especificado',
               Icons.badge,
               Colors.green),
           _buildInfoRow(
               'Género',
-              docente.gender.isNotEmpty ? docente.gender : 'No especificado',
+              docente.genero?.isNotEmpty == true
+                  ? docente.genero!
+                  : 'No especificado',
               Icons.person,
               Colors.purple),
           _buildInfoRow(
               'Fecha de Nacimiento',
-              docente.dateOfBirth != null
-                  ? docente.dateOfBirth.toString()
+              docente.fechaNacimiento != null
+                  ? docente.fechaNacimiento.toString().split('T')[0]
                   : 'No especificado',
               Icons.calendar_today,
               Colors.orange),
           _buildInfoRow(
               'Foto del Docente',
-              docente.docenteImagePath.isNotEmpty
+              docente.fotoDocente?.isNotEmpty == true
                   ? 'Imagen cargada'
                   : 'No hay imagen',
               Icons.photo,
@@ -1351,8 +1369,8 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
         children: [
           _buildExperienceCard(
             'Experiencia Profesional',
-            docente.yearsOfWorkExperience != null
-                ? '${docente.yearsOfWorkExperience} años'
+            docente.experienciaProfesional?.isNotEmpty == true
+                ? '${docente.experienciaProfesional} años'
                 : 'No especificado',
             Icons.work,
             Colors.blue,
@@ -1360,8 +1378,8 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           SizedBox(height: 16),
           _buildExperienceCard(
             'Experiencia Académica',
-            docente.semestersOfTeachingExperience != null
-                ? '${docente.semestersOfTeachingExperience} semestres'
+            docente.experienciaAcademica?.isNotEmpty == true
+                ? '${docente.experienciaAcademica} semestres'
                 : 'No especificado',
             Icons.school,
             Colors.green,
@@ -1445,15 +1463,15 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
         children: [
           _buildInfoRow(
               'Categoría Docente',
-              docente.teacherCategoryId != null
-                  ? 'Categoría ${docente.teacherCategoryId}'
+              docente.categoriaNombre?.isNotEmpty == true
+                  ? docente.categoriaNombre!
                   : 'No especificado',
               Icons.category,
               Colors.purple),
           _buildInfoRow(
               'Modalidad de Ingreso',
-              docente.entryModeId != null
-                  ? 'Modalidad ${docente.entryModeId}'
+              docente.modalidadIngresoNombre?.isNotEmpty == true
+                  ? docente.modalidadIngresoNombre!
                   : 'No especificado',
               Icons.login,
               Colors.orange),
@@ -1585,22 +1603,21 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
     // Asignar valores actuales
     _nombresController.text = docente.names ?? '';
     _apellidosController.text = docente.surnames ?? '';
-    _emailController.text = docente.email ?? '';
-    _carnetController.text = docente.identificationCard ?? '';
+    _emailController.text = docente.correoElectronico ?? '';
+    _carnetController.text = docente.carnetIdentidad ?? '';
     _experienciaProfesionalController.text =
-        (docente.yearsOfWorkExperience ?? 0).toString();
-    _experienciaAcademicaController.text =
-        (docente.semestersOfTeachingExperience ?? 0).toString();
+        docente.experienciaProfesional ?? '';
+    _experienciaAcademicaController.text = docente.experienciaAcademica ?? '';
 
     // Establecer género
-    if (docente.gender != null && docente.gender.isNotEmpty) {
-      _selectedGenero = docente.gender;
+    if (docente.genero != null && docente.genero!.isNotEmpty) {
+      _selectedGenero = docente.genero!;
     } else {
       _selectedGenero = 'Masculino'; // Valor por defecto
     }
 
     // Establecer fecha de nacimiento
-    _selectedDate = docente.dateOfBirth;
+    _selectedDate = docente.fechaNacimiento;
 
     // Forzar rebuild del widget para actualizar la UI
     setState(() {});

@@ -7,6 +7,7 @@ import 'package:frontend_emi_sistema/features/docente/presentation/providers/doc
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/selected_docente_provider.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/widgets/desktop_detalles_panel_widget.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/widgets/empty_desktop_panel_widget.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/widgets/docente_image.dart';
 
 class DocentesPage extends ConsumerWidget {
   const DocentesPage({super.key});
@@ -184,28 +185,12 @@ class DocentesPage extends ConsumerWidget {
                                     child: Row(
                                       children: [
                                         // Avatar
-                                        Container(
-                                          width: 60,
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            color: Color(0xff2350ba)
-                                                .withValues(alpha: 0.15),
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              docente.names.isNotEmpty
-                                                  ? docente.names[0]
-                                                      .toUpperCase()
-                                                  : '?',
-                                              style: TextStyle(
-                                                color: Color(0xff2350ba),
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                          ),
+                                        DocenteImage(
+                                          docente: docente,
+                                          radius: 30,
+                                          backgroundColor: Color(0xff2350ba)
+                                              .withValues(alpha: 0.15),
+                                          textColor: Color(0xff2350ba),
                                         ),
                                         SizedBox(width: 16),
                                         // Información del docente

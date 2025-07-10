@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend_emi_sistema/features/docente/domain/entities/docente.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/selected_docente_provider.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/widgets/docente_image.dart';
 
 class DocentesSideBar extends ConsumerWidget {
   final List<Docente> docentes;
@@ -87,15 +88,11 @@ class DocenteWidget extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           children: [
-            CircleAvatar(
+            DocenteImage(
+              docente: docente,
+              radius: 20,
               backgroundColor: Color(0xff2350ba).withValues(alpha: 0.15),
-              child: Text(
-                docente.names.isNotEmpty ? docente.names[0].toUpperCase() : '?',
-                style: TextStyle(
-                  color: Color(0xff2350ba),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              textColor: Color(0xff2350ba),
             ),
             SizedBox(width: 14),
             Expanded(

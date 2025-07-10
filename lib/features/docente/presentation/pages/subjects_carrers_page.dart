@@ -1068,6 +1068,7 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage> {
     final token = prefs.getString('userToken') ?? '';
 
     if (token.isEmpty) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text('Error: No se encontró el token de autenticación')),
@@ -1076,6 +1077,7 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage> {
     }
 
     showDialog(
+      // ignore: use_build_context_synchronously
       context: context,
       builder: (context) => Consumer(
         builder: (context, ref, child) {
@@ -1244,14 +1246,6 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage> {
                                                       color: Color(0xff2350ba),
                                                     ),
                                                   ),
-                                                  SizedBox(height: 4),
-                                                  Text(
-                                                    'ID: ${carrera.id}',
-                                                    style: TextStyle(
-                                                      color: Colors.grey[600],
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -1366,6 +1360,7 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage> {
     final token = prefs.getString('userToken') ?? '';
 
     if (token.isEmpty) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text('Error: No se encontró el token de autenticación')),
@@ -1374,6 +1369,7 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage> {
     }
 
     showDialog(
+      // ignore: use_build_context_synchronously
       context: context,
       builder: (context) => Consumer(
         builder: (context, ref, child) {
@@ -1626,12 +1622,15 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage> {
                   ),
                 ),
                 SizedBox(width: 12),
-                Text(
-                  carreraNombre,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff374151),
-                    fontSize: 16,
+                Expanded(
+                  child: Text(
+                    carreraNombre,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff374151),
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -1753,6 +1752,7 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage> {
 
       final solicitudesState = ref.read(solicitudesProvider);
       if (solicitudesState is SolicitudesSuccess) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Solicitud de carrera enviada exitosamente'),
@@ -1761,6 +1761,7 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage> {
         );
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al enviar solicitud: $e'),
@@ -1781,6 +1782,7 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage> {
 
       final solicitudesState = ref.read(solicitudesProvider);
       if (solicitudesState is SolicitudesSuccess) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Solicitud de asignatura enviada exitosamente'),
@@ -1789,6 +1791,7 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage> {
         );
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al enviar solicitud: $e'),

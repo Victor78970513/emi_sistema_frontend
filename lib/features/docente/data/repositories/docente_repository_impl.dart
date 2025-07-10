@@ -70,8 +70,19 @@ class DocenteRepositoryImpl implements DocenteRepository {
       final docenteModel =
           await docenteDatasource.updateDocenteProfile(profileData);
       return Right(docenteModel);
+    } on DioException catch (e) {
+      print(
+          'DocenteRepository - DioException en updateDocenteProfile: ${e.message}');
+      print('DocenteRepository - Status code: ${e.response?.statusCode}');
+      print('DocenteRepository - Response data: ${e.response?.data}');
+      return Left(NetworkFailure('Error de conexión: ${e.message}'));
     } on ServerException catch (e) {
+      print(
+          'DocenteRepository - ServerException en updateDocenteProfile: ${e.message}');
       return Left(ServerFailure(e.message));
+    } catch (e) {
+      print('DocenteRepository - Error inesperado en updateDocenteProfile: $e');
+      return Left(ServerFailure('Error inesperado: ${e.toString()}'));
     }
   }
 
@@ -81,8 +92,19 @@ class DocenteRepositoryImpl implements DocenteRepository {
       final docenteModel =
           await docenteDatasource.uploadDocentePhoto(photoFile);
       return Right(docenteModel);
+    } on DioException catch (e) {
+      print(
+          'DocenteRepository - DioException en uploadDocentePhoto: ${e.message}');
+      print('DocenteRepository - Status code: ${e.response?.statusCode}');
+      print('DocenteRepository - Response data: ${e.response?.data}');
+      return Left(NetworkFailure('Error de conexión: ${e.message}'));
     } on ServerException catch (e) {
+      print(
+          'DocenteRepository - ServerException en uploadDocentePhoto: ${e.message}');
       return Left(ServerFailure(e.message));
+    } catch (e) {
+      print('DocenteRepository - Error inesperado en uploadDocentePhoto: $e');
+      return Left(ServerFailure('Error inesperado: ${e.toString()}'));
     }
   }
 }

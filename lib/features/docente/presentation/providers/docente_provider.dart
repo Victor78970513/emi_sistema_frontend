@@ -40,6 +40,28 @@ class DocenteNotifier extends StateNotifier<DocenteState> {
     );
   }
 
+  Future<void> reloadPersonalInfo() async {
+    try {
+      print('DocenteProvider - Recargando información personal...');
+      final result = await _repository.getPersonalInfor();
+      result.fold(
+        (failure) {
+          print(
+              'DocenteProvider - Error al recargar información: ${failure.message}');
+          state = DocenteErrorState();
+        },
+        (docente) {
+          print(
+              'DocenteProvider - Información personal recargada exitosamente');
+          state = DocenteSuccessState(docente: docente);
+        },
+      );
+    } catch (e) {
+      print('DocenteProvider - Excepción al recargar información: $e');
+      state = DocenteErrorState();
+    }
+  }
+
   Future<void> getAllDocentes() async {
     print('DocenteNotifier: Iniciando getAllDocentes...');
     state = DocenteLoadingState();
@@ -66,17 +88,19 @@ class DocenteNotifier extends StateNotifier<DocenteState> {
       result.fold(
         (failure) {
           print('DocenteProvider - Error en actualización: ${failure.message}');
-          // No cambiar el estado si hay error, solo log
+          // Cambiar el estado a error para mostrar el mensaje
+          state = DocenteErrorState();
         },
         (docente) {
           print('DocenteProvider - Perfil actualizado exitosamente');
-          // Recargar la información personal después de actualizar
-          getPersonalInfo();
+          // Recargar la información personal para asegurar datos actualizados
+          reloadPersonalInfo();
         },
       );
     } catch (e) {
       print('DocenteProvider - Excepción en updateDocenteProfile: $e');
-      // No cambiar el estado si hay excepción, solo log
+      // Cambiar el estado a error para mostrar el mensaje
+      state = DocenteErrorState();
     }
   }
 
@@ -89,17 +113,19 @@ class DocenteNotifier extends StateNotifier<DocenteState> {
         (failure) {
           print(
               'DocenteProvider - Error en subida de foto: ${failure.message}');
-          // No cambiar el estado si hay error, solo log
+          // Cambiar el estado a error para mostrar el mensaje
+          state = DocenteErrorState();
         },
         (docente) {
           print('DocenteProvider - Foto subida exitosamente');
-          // Recargar la información personal después de subir la foto
-          getPersonalInfo();
+          // Recargar la información personal para asegurar datos actualizados
+          reloadPersonalInfo();
         },
       );
     } catch (e) {
       print('DocenteProvider - Excepción en uploadDocentePhoto: $e');
-      // No cambiar el estado si hay excepción, solo log
+      // Cambiar el estado a error para mostrar el mensaje
+      state = DocenteErrorState();
     }
   }
 }

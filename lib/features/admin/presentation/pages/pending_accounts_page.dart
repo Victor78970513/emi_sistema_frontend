@@ -5,7 +5,6 @@ import 'package:frontend_emi_sistema/features/admin/presentation/providers/pendi
 import 'package:frontend_emi_sistema/features/admin/presentation/widgets/pending_account_widget.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/widgets/pending_accounts_header.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/widgets/reject_dialog.dart';
-import 'package:frontend_emi_sistema/features/admin/presentation/providers/admin_data_provider.dart';
 
 class PendingAccountsPage extends ConsumerWidget {
   const PendingAccountsPage({super.key});

@@ -35,22 +35,22 @@ class PersonalInformationWidget extends StatelessWidget {
               ],
             ),
             PersonalInfoInput(
-              text: docente.email,
+              text: docente.correoElectronico,
               title: "Correo Electronico",
               icon: Icons.email,
             ),
             PersonalInfoInput(
-              text: docente.identificationCard,
+              text: docente.carnetIdentidad,
               title: "Cedula de Identidad",
               icon: Icons.credit_card,
             ),
             PersonalInfoInput(
-              text: docente.gender,
+              text: docente.genero,
               title: "Genero",
               icon: Icons.female_outlined,
             ),
             PersonalInfoInput(
-              text: docente.dateOfBirth?.day.toString(),
+              text: docente.fechaNacimiento?.day.toString(),
               title: "Genero",
               icon: Icons.date_range_rounded,
             ),

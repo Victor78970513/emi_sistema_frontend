@@ -33,6 +33,8 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
   @override
   Future<DocenteModel> getPersonalInfor() async {
     try {
+      print("DocenteDatasource - Obteniendo información personal");
+
       final authDio = _getDioWithAuth();
       final response = await authDio.get(
         // "http://localhost:3000/api/docente/me",
@@ -41,15 +43,37 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
 
       print(
           "DocenteDatasource - Respuesta información personal: ${response.data}");
-      final docente = DocenteModel.fromJson(response.data);
-      return docente;
-    } catch (e) {
-      print("Error en getPersonalInfor: ${e.toString()}");
-      if (e is DioException) {
-        print("Status code: ${e.response?.statusCode}");
-        print("Response data: ${e.response?.data}");
+
+      // Verificar que la respuesta sea válida
+      if (response.data == null) {
+        throw ServerException("Respuesta vacía del servidor");
       }
-      throw ServerException("Error al traer la informacion personal");
+
+      final docente = DocenteModel.fromJson(response.data);
+      print(
+          "DocenteDatasource - Información personal obtenida exitosamente: ${docente.names} ${docente.surnames}");
+      return docente;
+    } on DioException catch (e) {
+      print(
+          "DocenteDatasource - DioException en getPersonalInfor: ${e.message}");
+      print("DocenteDatasource - Status code: ${e.response?.statusCode}");
+      print("DocenteDatasource - Response data: ${e.response?.data}");
+
+      if (e.response?.statusCode == 401) {
+        throw ServerException(
+            "No autorizado. Por favor, inicie sesión nuevamente.");
+      } else if (e.response?.statusCode == 404) {
+        throw ServerException("Información del docente no encontrada.");
+      } else if (e.response?.statusCode == 500) {
+        throw ServerException("Error interno del servidor. Intente más tarde.");
+      } else {
+        throw ServerException("Error de conexión: ${e.message}");
+      }
+    } catch (e) {
+      print(
+          "DocenteDatasource - Error inesperado en getPersonalInfor: ${e.toString()}");
+      throw ServerException(
+          "Error al traer la información personal: ${e.toString()}");
     }
   }
 
@@ -136,6 +160,8 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
       Map<String, dynamic> profileData) async {
     try {
       print("DocenteDatasource - Actualizando perfil del docente");
+      print("DocenteDatasource - Datos a enviar: $profileData");
+
       final authDio = _getDioWithAuth();
       final response = await authDio.put(
         // "http://localhost:3000/api/docente/me",
@@ -144,15 +170,38 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
       );
 
       print("DocenteDatasource - Respuesta actualización: ${response.data}");
-      final docente = DocenteModel.fromJson(response.data);
-      return docente;
-    } catch (e) {
-      print("Error en updateDocenteProfile: ${e.toString()}");
-      if (e is DioException) {
-        print("Status code: ${e.response?.statusCode}");
-        print("Response data: ${e.response?.data}");
+
+      // Verificar que la respuesta sea válida
+      if (response.data == null) {
+        throw ServerException("Respuesta vacía del servidor");
       }
-      throw ServerException("Error al actualizar el perfil del docente");
+
+      final docente = DocenteModel.fromJson(response.data);
+      print(
+          "DocenteDatasource - Docente actualizado exitosamente: ${docente.names} ${docente.surnames}");
+      return docente;
+    } on DioException catch (e) {
+      print(
+          "DocenteDatasource - DioException en updateDocenteProfile: ${e.message}");
+      print("DocenteDatasource - Status code: ${e.response?.statusCode}");
+      print("DocenteDatasource - Response data: ${e.response?.data}");
+
+      if (e.response?.statusCode == 401) {
+        throw ServerException(
+            "No autorizado. Por favor, inicie sesión nuevamente.");
+      } else if (e.response?.statusCode == 400) {
+        throw ServerException(
+            "Datos inválidos. Verifique la información enviada.");
+      } else if (e.response?.statusCode == 500) {
+        throw ServerException("Error interno del servidor. Intente más tarde.");
+      } else {
+        throw ServerException("Error de conexión: ${e.message}");
+      }
+    } catch (e) {
+      print(
+          "DocenteDatasource - Error inesperado en updateDocenteProfile: ${e.toString()}");
+      throw ServerException(
+          "Error al actualizar el perfil del docente: ${e.toString()}");
     }
   }
 
