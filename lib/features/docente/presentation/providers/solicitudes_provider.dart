@@ -31,13 +31,19 @@ class SolicitudesNotifier extends StateNotifier<SolicitudesState> {
   Future<void> crearSolicitud(
       String token, String tipoSolicitud, int id) async {
     state = SolicitudesLoading();
-    try {
-      final solicitud =
-          await _repository.crearSolicitud(token, tipoSolicitud, id);
-      state = SolicitudesSuccess(solicitud);
-    } catch (e) {
-      state = SolicitudesError(e.toString());
-    }
+
+    final result = await _repository.crearSolicitud(token, tipoSolicitud, id);
+
+    result.fold(
+      (failure) {
+        state = SolicitudesError(failure.message);
+        // Re-lanzar la excepción para que la UI pueda manejarla
+        throw Exception(failure.message);
+      },
+      (solicitud) {
+        state = SolicitudesSuccess(solicitud);
+      },
+    );
   }
 }
 

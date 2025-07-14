@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend_emi_sistema/core/preferences/preferences.dart';
 import 'package:frontend_emi_sistema/core/router/router.dart';
+import 'package:frontend_emi_sistema/core/theme/emi_theme.dart';
 import 'package:frontend_emi_sistema/features/admin/data/datasource/pending_accounts_datasource.dart';
 import 'package:frontend_emi_sistema/features/admin/data/repositories/pending_accounts_repository_impl.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/providers/pending_accounts_repository_provider.dart';
@@ -47,6 +48,7 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       routerConfig: routerProvider,
       title: 'Sistema EMI',
+      theme: EMITheme.lightTheme,
     );
   }
 }

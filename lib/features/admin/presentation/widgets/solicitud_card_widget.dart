@@ -87,7 +87,7 @@ class SolicitudCardWidget extends ConsumerWidget {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Docente: ${solicitud.docenteNombre}',
+                        'Docente: ${solicitud.docenteNombre} ${solicitud.docenteApellidos}',
                         style: TextStyle(
                           fontSize: isDesktop ? 14 : 12,
                           color: Colors.grey[600],

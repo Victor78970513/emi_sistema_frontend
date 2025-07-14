@@ -8,7 +8,8 @@ abstract class SolicitudesAdminRemoteDataSource {
   Future<List<SolicitudAdminModel>> getSolicitudes(String token);
   Future<Map<String, dynamic>> aprobarSolicitud(
       String token, String solicitudId);
-  Future<void> rechazarSolicitud(String token, String solicitudId);
+  Future<void> rechazarSolicitud(
+      String token, String solicitudId, String reason);
 }
 
 class SolicitudesAdminRemoteDataSourceImpl
@@ -66,7 +67,8 @@ class SolicitudesAdminRemoteDataSourceImpl
   }
 
   @override
-  Future<void> rechazarSolicitud(String token, String solicitudId) async {
+  Future<void> rechazarSolicitud(
+      String token, String solicitudId, String reason) async {
     try {
       final response = await client.put(
         Uri.parse(
@@ -75,6 +77,9 @@ class SolicitudesAdminRemoteDataSourceImpl
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
+        body: json.encode({
+          'motivo_rechazo': reason,
+        }),
       );
 
       if (response.statusCode != 200) {

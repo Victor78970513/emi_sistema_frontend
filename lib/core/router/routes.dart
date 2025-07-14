@@ -11,6 +11,8 @@ class AppRoutes {
   static const String docentesPage = '/admin/docentes';
   static const String pendingAccountsPage = '/admin/pending-accounts';
   static const String applicationsPage = '/admin/applications';
+  static const String carrerasPage = '/admin/carreras';
+  static const String asignaturaDetallePage = '/admin/asignatura/:id';
 
   // DocenteShell
   static const String docenteShell = '/docente';

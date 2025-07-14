@@ -34,10 +34,14 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     ref.read(authProvider.notifier).checkAuth(token: token);
   }
 
+  void _navigate(String route) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.go(route);
+    });
+  }
+
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Escuchar cambios en el estado de autenticación
+  Widget build(BuildContext context) {
     ref.listen(authProvider, (previous, next) {
       if (_navigated) return;
       if (next is AuthSuccess) {
@@ -54,16 +58,6 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         _navigate(AppRoutes.loginPage);
       }
     });
-  }
-
-  void _navigate(String route) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) context.go(route);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(

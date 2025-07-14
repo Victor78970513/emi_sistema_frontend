@@ -41,17 +41,12 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
         "${Constants.baseUrl}api/docente/me",
       );
 
-      print(
-          "DocenteDatasource - Respuesta información personal: ${response.data}");
-
       // Verificar que la respuesta sea válida
       if (response.data == null) {
         throw ServerException("Respuesta vacía del servidor");
       }
 
       final docente = DocenteModel.fromJson(response.data);
-      print(
-          "DocenteDatasource - Información personal obtenida exitosamente: ${docente.names} ${docente.surnames}");
       return docente;
     } on DioException catch (e) {
       print(
@@ -126,23 +121,16 @@ class DocenteRemoteDatasourceImpl implements DocenteRemoteDatasource {
   Future<List<EstudioAcademicoModel>> getEstudiosAcademicos(
       {required int docenteId}) async {
     try {
-      print(
-          "DocenteDatasource - Obteniendo estudios académicos para docente: $docenteId");
       final authDio = _getDioWithAuth();
       final response = await authDio.get(
         // "http://localhost:3000/api/docente/$docenteId/estudios-academicos",
         "${Constants.baseUrl}api/docente/$docenteId/estudios-academicos",
       );
 
-      print(
-          "DocenteDatasource - Respuesta estudios académicos: ${response.data}");
-
       final data = response.data as List<dynamic>;
       final estudios = data
           .map((estudio) => EstudioAcademicoModel.fromJson(estudio))
           .toList();
-
-      print("DocenteDatasource - Estudios procesados: ${estudios.length}");
 
       return estudios;
     } catch (e) {

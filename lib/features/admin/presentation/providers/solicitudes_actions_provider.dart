@@ -61,12 +61,13 @@ class SolicitudesActionsNotifier
     }
   }
 
-  Future<void> rechazarSolicitud(String token, String solicitudId) async {
+  Future<void> rechazarSolicitud(
+      String token, String solicitudId, String reason) async {
     try {
       state =
           state.copyWith(isRejecting: true, error: null, successMessage: null);
 
-      await repository.rechazarSolicitud(token, solicitudId);
+      await repository.rechazarSolicitud(token, solicitudId, reason);
 
       state = state.copyWith(
         isRejecting: false,
@@ -94,7 +95,7 @@ final solicitudesActionsDataSourceProvider =
 // Provider para el repositorio
 final solicitudesActionsRepositoryProvider =
     Provider<SolicitudesAdminRepositoryImpl>((ref) {
-  final dataSource = ref.watch(solicitudesActionsDataSourceProvider);
+  final dataSource = ref.read(solicitudesActionsDataSourceProvider);
   return SolicitudesAdminRepositoryImpl(remoteDataSource: dataSource);
 });
 
@@ -102,6 +103,6 @@ final solicitudesActionsRepositoryProvider =
 final solicitudesActionsProvider =
     StateNotifierProvider<SolicitudesActionsNotifier, SolicitudesActionsState>(
         (ref) {
-  final repository = ref.watch(solicitudesActionsRepositoryProvider);
+  final repository = ref.read(solicitudesActionsRepositoryProvider);
   return SolicitudesActionsNotifier(repository);
 });

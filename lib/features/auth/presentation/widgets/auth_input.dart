@@ -36,52 +36,31 @@ class _AuthInputState extends State<AuthInput> {
             _isFocused = hasFocus;
           });
         },
-        child: AnimatedContainer(
-          duration: Duration(milliseconds: 200),
-          decoration: BoxDecoration(
-            color: _isFocused ? Colors.white : Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: _isFocused ? Color(0xff2350ba) : Colors.grey[300]!,
-              width: _isFocused ? 2 : 1,
-            ),
-            boxShadow: _isFocused
-                ? [
-                    BoxShadow(
-                      color: Color(0xff2350ba).withValues(alpha: 0.1),
-                      blurRadius: 8,
-                      offset: Offset(0, 2),
-                    ),
-                  ]
-                : null,
+        child: TextFormField(
+          controller: widget.controller,
+          obscureText: widget.obscure,
+          style: TextStyle(
+            fontSize: widget.isMobile ? 14 : 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
           ),
-          child: TextField(
-            controller: widget.controller,
-            obscureText: widget.obscure,
-            style: TextStyle(
+          decoration: InputDecoration(
+            hintText: widget.hintText,
+            hintStyle: TextStyle(
+              color: Colors.grey[500],
               fontSize: widget.isMobile ? 14 : 16,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
             ),
-            decoration: InputDecoration(
-              hintText: widget.hintText,
-              hintStyle: TextStyle(
-                color: Colors.grey[500],
-                fontSize: widget.isMobile ? 14 : 16,
-              ),
-              prefixIcon: Icon(
-                widget.suffixIcon,
-                color: _isFocused ? Color(0xff2350ba) : Colors.grey[600],
-                size: 20,
-              ),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: widget.isMobile ? 16 : 18,
-              ),
+            prefixIcon: Icon(
+              widget.suffixIcon,
+              color: _isFocused ? Color(0xff2350ba) : Colors.grey[600],
+              size: 20,
             ),
-            cursorColor: Color(0xff2350ba),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: widget.isMobile ? 16 : 18,
+            ),
           ),
+          cursorColor: Color(0xff2350ba),
         ),
       ),
     );

@@ -8,6 +8,7 @@ class SolicitudAdmin {
   final DateTime creadoEn;
   final DateTime modificadoEn;
   final String docenteNombre;
+  final String docenteApellidos;
   final String? carreraNombre;
   final String? asignaturaNombre;
   final String estadoNombre;
@@ -22,6 +23,7 @@ class SolicitudAdmin {
     required this.creadoEn,
     required this.modificadoEn,
     required this.docenteNombre,
+    required this.docenteApellidos,
     this.carreraNombre,
     this.asignaturaNombre,
     required this.estadoNombre,

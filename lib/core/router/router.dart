@@ -5,6 +5,8 @@ import 'package:frontend_emi_sistema/features/admin/presentation/pages/admin_hom
 import 'package:frontend_emi_sistema/features/admin/presentation/pages/docentes_page.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/pages/pending_accounts_page.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/pages/applications_page.dart';
+import 'package:frontend_emi_sistema/features/admin/presentation/pages/carreras_page.dart';
+import 'package:frontend_emi_sistema/features/admin/presentation/pages/asignatura_detalle_page.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/pages/aproval_pending_page.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/pages/web_login_page.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/pages/web_register_page.dart';
@@ -161,6 +163,31 @@ class AppRouter {
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: ApplicationsPage(),
+                );
+              },
+            ),
+
+            //CARRERAS
+            GoRoute(
+              path: AppRoutes.carrerasPage,
+              name: AppRoutes.carrerasPage,
+              pageBuilder: (context, state) {
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: CarrerasPage(),
+                );
+              },
+            ),
+
+            //DETALLES DE ASIGNATURA
+            GoRoute(
+              path: AppRoutes.asignaturaDetallePage,
+              name: AppRoutes.asignaturaDetallePage,
+              pageBuilder: (context, state) {
+                final asignaturaId = state.pathParameters['id']!;
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: AsignaturaDetallePage(asignaturaId: asignaturaId),
                 );
               },
             ),

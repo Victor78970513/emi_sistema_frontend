@@ -333,7 +333,65 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           Container(
             width: constraints.maxWidth * 0.3,
             padding: EdgeInsets.all(32),
-            child: _buildProfileCard(context, docente, true),
+            child: Container(
+              padding: EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Avatar centrado
+                  Center(
+                    child: DocenteImage(
+                      docente: docente,
+                      backgroundColor: Color(0xff2350ba).withValues(alpha: 0.1),
+                      textColor: Color(0xff2350ba),
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  // Nombre centrado
+                  Text(
+                    docente.names,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Color(0xff2350ba),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    docente.surnames,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[700],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 32),
+                  // Botones de acción
+                  _buildDesktopActionButton(
+                    'Editar Perfil',
+                    Icons.edit,
+                    () => _showEditProfileModal(context, docente),
+                  ),
+                  SizedBox(height: 12),
+                  _buildDesktopSecondaryButton(
+                    'Cambiar Foto',
+                    Icons.camera_alt,
+                    () => _selectAndUploadPhoto(),
+                  ),
+                ],
+              ),
+            ),
           ),
           // Contenido principal
           Expanded(
@@ -368,164 +426,108 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            // Header con gradiente
+            // Header simple y limpio
             Container(
               width: double.infinity,
+              padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xff4A90E2),
-                    Color(0xff5BA0F2),
-                  ],
-                ),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
-              child: SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
+              child: Column(
+                children: [
+                  // Avatar centrado
+                  Center(
+                    child: DocenteImage(
+                      docente: docente,
+                      backgroundColor: Color(0xff2350ba).withValues(alpha: 0.1),
+                      textColor: Color(0xff2350ba),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  // Nombre centrado
+                  Text(
+                    docente.names,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Color(0xff2350ba),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    docente.surnames,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[700],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 24),
+                  // Botones de acción
+                  Row(
                     children: [
-                      // Avatar del docente
-                      DocenteImage(docente: docente),
-                      SizedBox(height: 16),
-                      Text(
-                        docente.names,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        docente.surnames,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white.withValues(alpha: 0.9),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 12),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.3),
-                            width: 1,
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () =>
+                              _showEditProfileModal(context, docente),
+                          icon: Icon(Icons.edit, color: Colors.white),
+                          label: Text('Editar Perfil'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xff2350ba),
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                         ),
-                        child: Text(
-                          'ID: ${docente.docenteId}',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () => _selectAndUploadPhoto(),
+                          icon:
+                              Icon(Icons.camera_alt, color: Color(0xff2350ba)),
+                          label: Text('Cambiar Foto'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey[100],
+                            foregroundColor: Color(0xff2350ba),
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                ),
+                ],
               ),
             ),
-
             // Contenido principal
             Padding(
               padding: EdgeInsets.all(16),
               child: Column(
                 children: [
-                  // Botones de acción en grid
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 10,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Acciones Rápidas',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildMobileActionButton(
-                                'Editar',
-                                Icons.edit,
-                                () => _showEditProfileModal(context, docente),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: _buildMobileActionButton(
-                                'Foto',
-                                Icons.camera_alt,
-                                () => _selectAndUploadPhoto(),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12),
-                        // Row(
-                        //   children: [
-                        //     Expanded(
-                        //       child: _buildMobileActionButton(
-                        //         'Estudios',
-                        //         Icons.school,
-                        //         () => print('Ver estudios'),
-                        //       ),
-                        //     ),
-                        //     SizedBox(width: 12),
-                        //     Expanded(
-                        //       child: _buildMobileActionButton(
-                        //         'CV',
-                        //         Icons.download,
-                        //         () => print('Descargar CV'),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: 24),
-
-                  // Secciones de información
                   _buildSectionHeader('Información Personal', Icons.person),
                   SizedBox(height: 16),
                   _buildPersonalInfoGrid(docente),
-
                   SizedBox(height: 24),
-
                   _buildSectionHeader('Experiencia Profesional', Icons.work),
                   SizedBox(height: 16),
                   _buildExperienceSection(docente),
-
                   SizedBox(height: 24),
-
                   _buildSectionHeader('Información Académica', Icons.school),
                   SizedBox(height: 16),
                   _buildAcademicInfoSection(docente),
-
                   SizedBox(height: 32),
                 ],
               ),
@@ -540,18 +542,11 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
     return Container(
       padding: EdgeInsets.all(isDesktop ? 32 : 24),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xff4A90E2),
-            Color(0xff5BA0F2),
-          ],
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Color(0xff4A90E2).withValues(alpha: 0.3),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: Offset(0, 10),
           ),
@@ -730,7 +725,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xff4A90E2),
+          backgroundColor: Color(0xff2350ba),
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -744,231 +739,330 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
     // Inicializar controladores con los datos actuales
     _initializeControllers(docente);
 
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Evitar que se cierre al tocar fuera
-      builder: (BuildContext dialogContext) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Container(
+    final isDesktop = MediaQuery.of(context).size.width > 1024;
+
+    if (isDesktop) {
+      // Usar Dialog para desktop
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext dialogContext) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setModalState) {
+              return Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  constraints: BoxConstraints(maxWidth: 500),
+                  child: _buildEditProfileContent(
+                      context, setModalState, dialogContext),
+                ),
+              );
+            },
+          );
+        },
+      );
+    } else {
+      // Usar BottomSheet para móvil/tablet
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setModalState) {
+              return Container(
+                height: MediaQuery.of(context).size.height * 0.9,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
                   ),
                 ),
-                width: MediaQuery.of(context).size.width * 0.9,
-                constraints: BoxConstraints(maxWidth: 500),
+                child: _buildEditProfileContent(context, setModalState, null),
+              );
+            },
+          );
+        },
+      );
+    }
+  }
+
+  Widget _buildEditProfileContent(BuildContext context,
+      StateSetter setModalState, BuildContext? dialogContext) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Header del modal
+        Container(
+          padding: EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xff2350ba),
+                Color(0xff1e40af),
+              ],
+            ),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(dialogContext != null ? 20 : 24),
+              topRight: Radius.circular(dialogContext != null ? 20 : 24),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              SizedBox(width: 16),
+              Expanded(
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header del modal
-                    Container(
-                      padding: EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xff4A90E2),
-                            Color(0xff5BA0F2),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                          bottomLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(20),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Editar Perfil',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'Actualiza tu información personal',
-                                  style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () => Navigator.of(dialogContext).pop(),
-                            icon: Icon(Icons.close, color: Colors.white),
-                          ),
-                        ],
+                    Text(
+                      'Editar Perfil',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                    // Contenido del formulario
-                    Flexible(
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.all(24),
-                        child: Column(
-                          children: [
-                            _buildModernEditField('Nombres', _nombresController,
-                                Icons.person, 'Ingresa tus nombres'),
-                            SizedBox(height: 20),
-                            _buildModernEditField(
-                                'Apellidos',
-                                _apellidosController,
-                                Icons.person,
-                                'Ingresa tus apellidos'),
-                            SizedBox(height: 20),
-                            _buildModernEditField('Email', _emailController,
-                                Icons.email, 'Ingresa tu email'),
-                            SizedBox(height: 20),
-                            _buildModernEditField(
-                                'Carnet de Identidad',
-                                _carnetController,
-                                Icons.badge,
-                                'Ingresa tu carnet',
-                                TextInputType.number),
-                            SizedBox(height: 20),
-                            _buildModernDropdownField(
-                                'Género',
-                                _selectedGenero,
-                                _generos,
-                                Icons.person_outline, (String? newValue) {
-                              setModalState(() {
-                                _updateGenero(newValue);
-                              });
-                            }),
-                            SizedBox(height: 20),
-                            _buildModernDateField('Fecha de Nacimiento',
-                                _selectedDate, Icons.calendar_today, () async {
-                              await _selectDate(context);
-                              setModalState(() {});
-                            }),
-                            SizedBox(height: 20),
-                            _buildModernEditField(
-                              'Experiencia Profesional',
-                              _experienciaProfesionalController,
-                              Icons.work,
-                              'Años de experiencia',
-                              TextInputType.number,
-                            ),
-                            SizedBox(height: 20),
-                            _buildModernEditField(
-                              'Experiencia Académica',
-                              _experienciaAcademicaController,
-                              Icons.school,
-                              'Semestres de docencia',
-                              TextInputType.number,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    // Botones de acción
-                    Container(
-                      padding: EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(20),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () =>
-                                  Navigator.of(dialogContext).pop(),
-                              style: OutlinedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(vertical: 16),
-                                side: BorderSide(color: Color(0xff4A90E2)),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Text(
-                                'Cancelar',
-                                style: TextStyle(
-                                  color: Color(0xff4A90E2),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () =>
-                                  _updateProfileAndClose(dialogContext),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xff4A90E2),
-                                foregroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(vertical: 16),
-                                elevation: 2,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.save,
-                                      size: 20, color: Colors.white),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Guardar Cambios',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                    SizedBox(height: 4),
+                    Text(
+                      'Actualiza tu información personal',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontSize: 14,
                       ),
                     ),
                   ],
                 ),
               ),
-            );
-          },
-        );
-      },
+              if (dialogContext != null)
+                IconButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  icon: Icon(Icons.close, color: Colors.white),
+                ),
+            ],
+          ),
+        ),
+
+        // Contenido del formulario
+        Flexible(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              children: [
+                _buildModernEditField('Nombres', _nombresController,
+                    Icons.person, 'Ingresa tus nombres'),
+                SizedBox(height: 20),
+                _buildModernEditField('Apellidos', _apellidosController,
+                    Icons.person, 'Ingresa tus apellidos'),
+                SizedBox(height: 20),
+                _buildModernEditField(
+                    'Email', _emailController, Icons.email, 'Ingresa tu email'),
+                SizedBox(height: 20),
+                _buildModernEditField('Carnet de Identidad', _carnetController,
+                    Icons.badge, 'Ingresa tu carnet', TextInputType.number),
+                SizedBox(height: 20),
+                _buildModernDropdownField(
+                    'Género', _selectedGenero, _generos, Icons.person_outline,
+                    (String? newValue) {
+                  setModalState(() {
+                    _updateGenero(newValue);
+                  });
+                }),
+                SizedBox(height: 20),
+                _buildModernDateField(
+                    'Fecha de Nacimiento', _selectedDate, Icons.calendar_today,
+                    () async {
+                  await _selectDate(context);
+                  setModalState(() {});
+                }),
+                SizedBox(height: 20),
+                _buildModernEditField(
+                  'Experiencia Profesional',
+                  _experienciaProfesionalController,
+                  Icons.work,
+                  'Años de experiencia',
+                  TextInputType.number,
+                ),
+                SizedBox(height: 20),
+                _buildModernEditField(
+                  'Experiencia Académica',
+                  _experienciaAcademicaController,
+                  Icons.school,
+                  'Semestres de docencia',
+                  TextInputType.number,
+                ),
+                SizedBox(height: 24),
+              ],
+            ),
+          ),
+        ),
+
+        // Botones de acción
+        Container(
+          padding: EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(dialogContext != null ? 20 : 24),
+              bottomRight: Radius.circular(dialogContext != null ? 20 : 24),
+            ),
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isMobile = constraints.maxWidth < 600;
+
+              if (isMobile) {
+                // Layout en columna para móvil/tablet
+                return Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () =>
+                            _updateProfileAndClose(dialogContext ?? context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xff2350ba),
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.save, size: 20, color: Colors.white),
+                            SizedBox(width: 8),
+                            Text(
+                              'Guardar Cambios',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          if (dialogContext != null) {
+                            Navigator.of(dialogContext).pop();
+                          } else {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          side: BorderSide(color: Color(0xff2350ba)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'Cancelar',
+                          style: TextStyle(
+                            color: Color(0xff2350ba),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                // Layout en fila para desktop
+                return Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          if (dialogContext != null) {
+                            Navigator.of(dialogContext).pop();
+                          } else {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          side: BorderSide(color: Color(0xff2350ba)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'Cancelar',
+                          style: TextStyle(
+                            color: Color(0xff2350ba),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () =>
+                            _updateProfileAndClose(dialogContext ?? context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xff2350ba),
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.save, size: 20, color: Colors.white),
+                            SizedBox(width: 8),
+                            Text(
+                              'Guardar Cambios',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -1491,7 +1585,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Color(0xff4A90E2),
+              primary: Color(0xff2350ba),
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Colors.black87,
@@ -1517,7 +1611,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
   }
 
   // Método para actualizar el perfil y cerrar el modal
-  Future<void> _updateProfileAndClose(BuildContext dialogContext) async {
+  Future<void> _updateProfileAndClose(BuildContext context) async {
     try {
       final Map<String, dynamic> profileData = {
         'nombres': _nombresController.text,
@@ -1539,7 +1633,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
       print('PersonalInfoPage - Datos a enviar: $profileData');
 
       // Cerrar el modal primero
-      Navigator.of(dialogContext).pop();
+      Navigator.of(context).pop();
 
       // Actualizar el perfil después de cerrar el modal
       await ref
@@ -1631,5 +1725,65 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
     print('Experiencia Académica: ${_experienciaAcademicaController.text}');
     print('Género: $_selectedGenero');
     print('Fecha: $_selectedDate');
+  }
+
+  Widget _buildDesktopActionButton(
+      String text, IconData icon, VoidCallback onPressed) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 18, color: Colors.white),
+        label: Text(
+          text,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Color(0xff2350ba),
+          foregroundColor: Colors.white,
+          elevation: 2,
+          padding: EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopSecondaryButton(
+      String text, IconData icon, VoidCallback onPressed) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 18, color: Color(0xff2350ba)),
+        label: Text(
+          text,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Color(0xff2350ba),
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey[100],
+          foregroundColor: Color(0xff2350ba),
+          elevation: 0,
+          padding: EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: Color(0xff2350ba).withValues(alpha: 0.3),
+              width: 1,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

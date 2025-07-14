@@ -48,6 +48,6 @@ class EstudiosAcademicosNotifier
 final estudiosAcademicosProvider =
     StateNotifierProvider<EstudiosAcademicosNotifier, EstudiosAcademicosState>(
         (ref) {
-  final repository = ref.watch(docenteRepositoryProvider);
+  final repository = ref.read(docenteRepositoryProvider);
   return EstudiosAcademicosNotifier(repository);
 });

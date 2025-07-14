@@ -7,6 +7,7 @@ import '../providers/admin_data_provider.dart';
 import '../providers/solicitudes_loading_provider.dart';
 import '../../domain/entities/solicitud_admin.dart';
 import '../widgets/solicitud_card_widget.dart';
+import '../widgets/reject_dialog.dart';
 
 class ApplicationsPage extends ConsumerWidget {
   const ApplicationsPage({super.key});
@@ -339,36 +340,54 @@ class ApplicationsPage extends ConsumerWidget {
 
   void _rechazarSolicitud(BuildContext context, SolicitudAdmin solicitud,
       String token, WidgetRef ref) {
-    final solicitudId = solicitud.id.toString();
+    // Mostrar diálogo para pedir razón del rechazo
+    showDialog(
+      context: context,
+      builder: (dialogContext) => RejectDialog(
+        userName: '${solicitud.docenteNombre} ${solicitud.docenteApellidos}',
+        onReject: (String reason) async {
+          final solicitudId = solicitud.id.toString();
 
-    // Activar loading para esta solicitud
-    ref
-        .read(solicitudesLoadingProvider.notifier)
-        .setLoading(solicitudId, 'rejecting');
+          // Activar loading para esta solicitud
+          ref
+              .read(solicitudesLoadingProvider.notifier)
+              .setLoading(solicitudId, 'rejecting');
 
-    // Ejecutar la acción con delay para ver el loading
-    Future.delayed(Duration(seconds: 2), () {
-      ref
-          .read(solicitudesActionsProvider.notifier)
-          .rechazarSolicitud(token, solicitudId)
-          .then((_) {
-        // Desactivar loading
-        ref.read(solicitudesLoadingProvider.notifier).clearLoading(solicitudId);
+          try {
+            // Ejecutar la acción con delay para ver el loading
+            await Future.delayed(Duration(seconds: 2), () async {
+              await ref
+                  .read(solicitudesActionsProvider.notifier)
+                  .rechazarSolicitud(token, solicitudId, reason);
+            });
 
-        // Obtener el estado actual
-        final actionsState = ref.read(solicitudesActionsProvider);
+            // Desactivar loading
+            ref
+                .read(solicitudesLoadingProvider.notifier)
+                .clearLoading(solicitudId);
 
-        if (actionsState.error != null) {
-          // Solo mostrar error en consola, no SnackBar
-          print('Error al rechazar solicitud: ${actionsState.error}');
-        } else if (actionsState.successMessage != null) {
-          print('Acción exitosa, recargando datos...');
-          // Recargar todos los datos del admin
-          Future(() {
-            ref.read(adminDataProvider.notifier).refreshAllData();
-          });
-        }
-      });
-    });
+            // Obtener el estado actual
+            final actionsState = ref.read(solicitudesActionsProvider);
+
+            if (actionsState.error != null) {
+              // Solo mostrar error en consola, no SnackBar
+              print('Error al rechazar solicitud: ${actionsState.error}');
+            } else if (actionsState.successMessage != null) {
+              print('Acción exitosa, recargando datos...');
+              // Recargar todos los datos del admin
+              Future(() {
+                ref.read(adminDataProvider.notifier).refreshAllData();
+              });
+            }
+          } catch (e) {
+            // Desactivar loading en caso de error
+            ref
+                .read(solicitudesLoadingProvider.notifier)
+                .clearLoading(solicitudId);
+            print('Error al rechazar solicitud: $e');
+          }
+        },
+      ),
+    );
   }
 }

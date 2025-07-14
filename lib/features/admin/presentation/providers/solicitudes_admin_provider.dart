@@ -15,13 +15,13 @@ final solicitudesAdminDataSourceProvider =
 // Provider para el repositorio
 final solicitudesAdminRepositoryProvider =
     Provider<SolicitudesAdminRepository>((ref) {
-  final dataSource = ref.watch(solicitudesAdminDataSourceProvider);
+  final dataSource = ref.read(solicitudesAdminDataSourceProvider);
   return SolicitudesAdminRepositoryImpl(remoteDataSource: dataSource);
 });
 
 // Provider para las solicitudes
 final solicitudesAdminProvider =
     FutureProvider.family<List<SolicitudAdmin>, String>((ref, token) async {
-  final repository = ref.watch(solicitudesAdminRepositoryProvider);
+  final repository = ref.read(solicitudesAdminRepositoryProvider);
   return await repository.getSolicitudes(token);
 });

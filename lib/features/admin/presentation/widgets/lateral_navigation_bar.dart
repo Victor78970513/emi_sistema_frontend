@@ -137,11 +137,17 @@ class _LateralNavigationBarState extends ConsumerState<LateralNavigationBar> {
                                 path: AppRoutes.applicationsPage,
                                 index: 2,
                               ),
+                              LateralNavigatorItem(
+                                title: "Carreras",
+                                icon: Icons.school,
+                                path: AppRoutes.carrerasPage,
+                                index: 3,
+                              ),
                               // LateralNavigatorItem(
                               //   title: "Horarios",
                               //   icon: Icons.insert_chart_outlined,
                               //   path: AppRoutes.pendingAccountsPage,
-                              //   index: 3,
+                              //   index: 4,
                               // ),
 
                               // Espacio flexible para empujar el logout hacia abajo
@@ -280,6 +286,11 @@ class MobileNavigationDrawer extends ConsumerWidget {
                     title: "Postulaciones",
                     icon: Icons.fact_check,
                     path: AppRoutes.applicationsPage,
+                  ),
+                  DrawerItem(
+                    title: "Carreras",
+                    icon: Icons.school,
+                    path: AppRoutes.carrerasPage,
                   ),
                   // DrawerItem(
                   //   title: "Horarios",

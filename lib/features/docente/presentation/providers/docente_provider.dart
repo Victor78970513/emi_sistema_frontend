@@ -9,18 +9,18 @@ final docenteDatasourceProvider = Provider<DocenteRemoteDatasource>((ref) {
 });
 
 final docenteRepositoryProvider = Provider<DocenteRepositoryImpl>((ref) {
-  final datasource = ref.watch(docenteDatasourceProvider);
+  final datasource = ref.read(docenteDatasourceProvider);
   return DocenteRepositoryImpl(docenteDatasource: datasource);
 });
 
 final docenteProvider =
     StateNotifierProvider<DocenteNotifier, DocenteState>((ref) {
-  final repository = ref.watch(docenteRepositoryProvider);
+  final repository = ref.read(docenteRepositoryProvider);
   return DocenteNotifier(repository);
 });
 
 final carrerasProvider = FutureProvider<List<CarreraModel>>((ref) async {
-  final repo = ref.watch(docenteRepositoryProvider);
+  final repo = ref.read(docenteRepositoryProvider);
   final result = await repo.getCarreras();
   return result.fold(
       (failure) => throw failure.message, (carreras) => carreras);

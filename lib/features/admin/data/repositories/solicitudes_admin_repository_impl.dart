@@ -30,9 +30,10 @@ class SolicitudesAdminRepositoryImpl implements SolicitudesAdminRepository {
   }
 
   @override
-  Future<void> rechazarSolicitud(String token, String solicitudId) async {
+  Future<void> rechazarSolicitud(
+      String token, String solicitudId, String reason) async {
     try {
-      await remoteDataSource.rechazarSolicitud(token, solicitudId);
+      await remoteDataSource.rechazarSolicitud(token, solicitudId, reason);
     } catch (e) {
       throw Exception('Error al rechazar solicitud: $e');
     }

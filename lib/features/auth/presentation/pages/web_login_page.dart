@@ -6,6 +6,7 @@ import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_p
 import 'package:frontend_emi_sistema/features/auth/presentation/widgets/auth_button.dart';
 import 'package:frontend_emi_sistema/features/auth/presentation/widgets/auth_input.dart';
 import 'package:go_router/go_router.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider.dart';
 
 class WebLoginPage extends ConsumerStatefulWidget {
   const WebLoginPage({super.key});
@@ -23,6 +24,11 @@ class _WebLoginPageState extends ConsumerState<WebLoginPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    // Precargar las carreras para que estén disponibles en el registro
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(carrerasProvider);
+    });
   }
 
   @override

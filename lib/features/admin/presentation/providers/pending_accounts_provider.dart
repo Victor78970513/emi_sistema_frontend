@@ -76,6 +76,6 @@ class PendingAccountsNotifier extends StateNotifier<PendingAccountsState> {
 
 final pendingAccountsProvider =
     StateNotifierProvider<PendingAccountsNotifier, PendingAccountsState>((ref) {
-  final repository = ref.watch(pendingAccountsRepositoryProvider);
+  final repository = ref.read(pendingAccountsRepositoryProvider);
   return PendingAccountsNotifier(repository, ref);
 });

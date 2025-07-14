@@ -13,7 +13,7 @@ final solicitudesAdminActionsDataSourceProvider =
 // Provider para el repositorio
 final solicitudesAdminActionsRepositoryProvider =
     Provider<SolicitudesAdminRepositoryImpl>((ref) {
-  final dataSource = ref.watch(solicitudesAdminActionsDataSourceProvider);
+  final dataSource = ref.read(solicitudesAdminActionsDataSourceProvider);
   return SolicitudesAdminRepositoryImpl(remoteDataSource: dataSource);
 });
 
@@ -21,7 +21,7 @@ final solicitudesAdminActionsRepositoryProvider =
 final aprobarSolicitudProvider =
     FutureProvider.family<Map<String, dynamic>, Map<String, String>>(
         (ref, params) async {
-  final repository = ref.watch(solicitudesAdminActionsRepositoryProvider);
+  final repository = ref.read(solicitudesAdminActionsRepositoryProvider);
   final token = params['token']!;
   final solicitudId = params['solicitudId']!;
   return await repository.aprobarSolicitud(token, solicitudId);
@@ -30,8 +30,9 @@ final aprobarSolicitudProvider =
 // Provider para rechazar solicitud
 final rechazarSolicitudProvider =
     FutureProvider.family<void, Map<String, String>>((ref, params) async {
-  final repository = ref.watch(solicitudesAdminActionsRepositoryProvider);
+  final repository = ref.read(solicitudesAdminActionsRepositoryProvider);
   final token = params['token']!;
   final solicitudId = params['solicitudId']!;
-  return await repository.rechazarSolicitud(token, solicitudId);
+  final reason = params['reason']!;
+  return await repository.rechazarSolicitud(token, solicitudId, reason);
 });

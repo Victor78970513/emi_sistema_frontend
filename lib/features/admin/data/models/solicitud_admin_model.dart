@@ -11,6 +11,7 @@ class SolicitudAdminModel extends SolicitudAdmin {
     required super.creadoEn,
     required super.modificadoEn,
     required super.docenteNombre,
+    required super.docenteApellidos,
     super.carreraNombre,
     super.asignaturaNombre,
     required super.estadoNombre,
@@ -29,6 +30,7 @@ class SolicitudAdminModel extends SolicitudAdmin {
       modificadoEn: DateTime.parse(
           json['modificado_en'] ?? DateTime.now().toIso8601String()),
       docenteNombre: json['docente_nombre'] ?? '',
+      docenteApellidos: json['docente_apellidos'] ?? '',
       carreraNombre: json['carrera_nombre'],
       asignaturaNombre: json['asignatura_nombre'],
       estadoNombre: json['estado_nombre'] ?? '',
@@ -46,6 +48,7 @@ class SolicitudAdminModel extends SolicitudAdmin {
       'creado_en': creadoEn.toIso8601String(),
       'modificado_en': modificadoEn.toIso8601String(),
       'docente_nombre': docenteNombre,
+      'docente_apellidos': docenteApellidos,
       'carrera_nombre': carreraNombre,
       'asignatura_nombre': asignaturaNombre,
       'estado_nombre': estadoNombre,

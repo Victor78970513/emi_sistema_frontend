@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/widgets/docente_lateral_navigation_bar.dart';
-import 'package:frontend_emi_sistema/features/auth/presentation/providers/auth_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/widgets/docente_mobile_navigation_drawer.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/estudios_academicos_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/docente_provider_state.dart';
@@ -92,33 +91,19 @@ class _DocenteHomePageState extends ConsumerState<DocenteHomePage> {
             ),
           );
         } else {
-          // Vista mobile/tablet con drawer
+          // Vista mobile/tablet con drawer (sin AppBar)
           return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Color(0xff2350ba),
-              foregroundColor: Colors.white,
-              elevation: 0,
-              title: Text(
-                'Panel del Docente',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                ),
-              ),
-              actions: [
-                // Botón de cerrar sesión en el app bar
-                IconButton(
-                  onPressed: () async {
-                    await ref.read(authProvider.notifier).logOut();
-                    // Aquí necesitarías navegar al login
-                  },
-                  icon: Icon(Icons.logout),
-                  tooltip: 'Cerrar Sesión',
-                ),
-                SizedBox(width: 8),
-              ],
-            ),
+            backgroundColor: Colors.white,
             drawer: DocenteMobileNavigationDrawer(),
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: IconThemeData(
+                color: Color(0xff2350ba),
+                size: 24,
+              ),
+              // toolbarHeight: 0,
+            ),
             body: widget.child,
           );
         }

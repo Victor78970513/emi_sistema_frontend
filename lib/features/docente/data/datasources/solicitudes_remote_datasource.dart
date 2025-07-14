@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:frontend_emi_sistema/core/error/exceptions.dart';
 import '../../domain/entities/solicitud.dart';
 import '../datasources/solicitudes_datasource.dart';
 import '../models/solicitud_model.dart';
@@ -38,7 +39,28 @@ class SolicitudesRemoteDatasourceImpl implements SolicitudesDatasource {
         throw Exception('Error al crear solicitud');
       }
     } catch (e) {
-      throw Exception('Error de conexión: $e');
+      // Manejar errores específicos del backend
+      if (e is DioException) {
+        final responseData = e.response?.data;
+        if (responseData is Map<String, dynamic>) {
+          final errorMessage = responseData['error']?.toString() ?? '';
+
+          // Mapear errores específicos a mensajes amigables
+          if (errorMessage.contains('ya está asociado a esta carrera')) {
+            throw ServerException(
+                'Ya estás asociado a esta carrera. No puedes postular nuevamente.');
+          } else if (errorMessage
+              .contains('ya está asociado a esta asignatura')) {
+            throw ServerException(
+                'Ya estás asociado a esta asignatura. No puedes postular nuevamente.');
+          } else if (errorMessage.isNotEmpty) {
+            throw ServerException(errorMessage);
+          }
+        }
+      }
+      throw ServerException(
+        'Error al enviar solicitud. Revisa si ya tienes una solicitud pendiente para la misma selección o intenta nuevamente más tarde.',
+      );
     }
   }
 }
