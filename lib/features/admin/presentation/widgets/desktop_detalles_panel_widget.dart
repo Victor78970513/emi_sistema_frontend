@@ -5,19 +5,46 @@ import 'package:frontend_emi_sistema/features/docente/domain/entities/docente.da
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/estudios_academicos_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/widgets/docente_image.dart';
 
-class DesktopDetallesPanelWidget extends ConsumerWidget {
+class DesktopDetallesPanelWidget extends ConsumerStatefulWidget {
   final Docente docente;
   const DesktopDetallesPanelWidget({super.key, required this.docente});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Cargar los estudios académicos cuando se selecciona un docente
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(estudiosAcademicosProvider.notifier)
-          .getEstudiosAcademicos(docenteId: docente.docenteId);
-    });
+  ConsumerState<DesktopDetallesPanelWidget> createState() =>
+      _DesktopDetallesPanelWidgetState();
+}
 
+class _DesktopDetallesPanelWidgetState
+    extends ConsumerState<DesktopDetallesPanelWidget> {
+  int? _lastDocenteId;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadEstudios();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant DesktopDetallesPanelWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.docente.docenteId != _lastDocenteId) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadEstudios();
+      });
+    }
+  }
+
+  void _loadEstudios() {
+    _lastDocenteId = widget.docente.docenteId;
+    ref
+        .read(estudiosAcademicosProvider.notifier)
+        .getEstudiosAcademicos(docenteId: widget.docente.docenteId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
       child: SingleChildScrollView(
@@ -40,7 +67,7 @@ class DesktopDetallesPanelWidget extends ConsumerWidget {
                 children: [
                   // Avatar grande
                   DocenteImage(
-                    docente: docente,
+                    docente: widget.docente,
                     radius: 50,
                     backgroundColor: Color(0xff2350ba).withValues(alpha: 0.15),
                     textColor: Color(0xff2350ba),
@@ -53,7 +80,7 @@ class DesktopDetallesPanelWidget extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${docente.names} ${docente.surnames}',
+                          '${widget.docente.names} ${widget.docente.surnames}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 28,
@@ -62,7 +89,7 @@ class DesktopDetallesPanelWidget extends ConsumerWidget {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          'ID: ${docente.docenteId}',
+                          'ID: ${widget.docente.docenteId}',
                           style: TextStyle(
                             fontSize: 18,
                             color: Colors.grey[600],
@@ -73,22 +100,22 @@ class DesktopDetallesPanelWidget extends ConsumerWidget {
                           padding:
                               EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
-                            color: docente.estadoNombre == 'aprobado'
+                            color: widget.docente.estadoNombre == 'aprobado'
                                 ? Colors.green.withValues(alpha: 0.1)
                                 : Colors.orange.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: docente.estadoNombre == 'aprobado'
+                              color: widget.docente.estadoNombre == 'aprobado'
                                   ? Colors.green
                                   : Colors.orange,
                               width: 1,
                             ),
                           ),
                           child: Text(
-                            docente.estadoNombre ?? '',
+                            widget.docente.estadoNombre ?? '',
                             style: TextStyle(
                               fontSize: 14,
-                              color: docente.estadoNombre == 'aprobado'
+                              color: widget.docente.estadoNombre == 'aprobado'
                                   ? Colors.green
                                   : Colors.orange,
                               fontWeight: FontWeight.w600,
@@ -185,47 +212,49 @@ class DesktopDetallesPanelWidget extends ConsumerWidget {
                       _CompactInfoRow(
                         icon: Icons.person_outline,
                         label: 'Nombres',
-                        value: docente.names,
+                        value: widget.docente.names,
                         color: Color(0xff3b82f6),
                       ),
                       SizedBox(height: 12),
                       _CompactInfoRow(
                         icon: Icons.person_outline,
                         label: 'Apellidos',
-                        value: docente.surnames,
+                        value: widget.docente.surnames,
                         color: Color(0xff3b82f6),
                       ),
                       SizedBox(height: 12),
                       _CompactInfoRow(
                         icon: Icons.badge,
                         label: 'ID Docente',
-                        value: docente.docenteId.toString(),
+                        value: widget.docente.docenteId.toString(),
                         color: Color(0xff10b981),
                       ),
                       SizedBox(height: 12),
                       _CompactInfoRow(
                         icon: Icons.credit_card,
                         label: 'Carnet de Identidad',
-                        value: docente.carnetIdentidad?.isNotEmpty == true
-                            ? docente.carnetIdentidad!
-                            : 'No especificado',
+                        value:
+                            widget.docente.carnetIdentidad?.isNotEmpty == true
+                                ? widget.docente.carnetIdentidad!
+                                : 'No especificado',
                         color: Color(0xff8b5cf6),
                       ),
                       SizedBox(height: 12),
                       _CompactInfoRow(
                         icon: Icons.email,
                         label: 'Correo Electrónico',
-                        value: docente.correoElectronico?.isNotEmpty == true
-                            ? docente.correoElectronico!
-                            : 'No especificado',
+                        value:
+                            widget.docente.correoElectronico?.isNotEmpty == true
+                                ? widget.docente.correoElectronico!
+                                : 'No especificado',
                         color: Color(0xff06b6d4),
                       ),
                       SizedBox(height: 12),
                       _CompactInfoRow(
                         icon: Icons.wc,
                         label: 'Género',
-                        value: docente.genero?.isNotEmpty == true
-                            ? docente.genero!
+                        value: widget.docente.genero?.isNotEmpty == true
+                            ? widget.docente.genero!
                             : 'No especificado',
                         color: Color(0xffec4899),
                       ),
@@ -233,17 +262,19 @@ class DesktopDetallesPanelWidget extends ConsumerWidget {
                       _CompactInfoRow(
                         icon: Icons.cake,
                         label: 'Fecha de Nacimiento',
-                        value: docente.fechaNacimiento != null
-                            ? docente.fechaNacimiento.toString().split('T')[0]
+                        value: widget.docente.fechaNacimiento != null
+                            ? widget.docente.fechaNacimiento
+                                .toString()
+                                .split('T')[0]
                             : 'No especificado',
                         color: Color(0xfff59e0b),
                       ),
                       SizedBox(height: 12),
-                      if (docente.carreraNombre != null) ...[
+                      if (widget.docente.carreraNombre != null) ...[
                         _CompactInfoRow(
                           icon: Icons.school,
                           label: 'Carrera',
-                          value: docente.carreraNombre!,
+                          value: widget.docente.carreraNombre!,
                           color: Color(0xfff59e0b),
                         ),
                         SizedBox(height: 12),
@@ -251,8 +282,8 @@ class DesktopDetallesPanelWidget extends ConsumerWidget {
                       _CompactInfoRow(
                         icon: Icons.verified,
                         label: 'Estado',
-                        value: docente.estadoNombre ?? 'No especificado',
-                        color: docente.estadoNombre == 'aprobado'
+                        value: widget.docente.estadoNombre ?? 'No especificado',
+                        color: widget.docente.estadoNombre == 'aprobado'
                             ? Color(0xff10b981)
                             : Color(0xfff59e0b),
                         isStatus: true,
@@ -261,9 +292,10 @@ class DesktopDetallesPanelWidget extends ConsumerWidget {
                       _CompactInfoRow(
                         icon: Icons.category,
                         label: 'Categoría Docente',
-                        value: docente.categoriaNombre?.isNotEmpty == true
-                            ? docente.categoriaNombre!
-                            : 'No especificado',
+                        value:
+                            widget.docente.categoriaNombre?.isNotEmpty == true
+                                ? widget.docente.categoriaNombre!
+                                : 'No especificado',
                         color: Color(0xff6366f1),
                       ),
                       SizedBox(height: 12),
@@ -271,8 +303,9 @@ class DesktopDetallesPanelWidget extends ConsumerWidget {
                         icon: Icons.login,
                         label: 'Modalidad de Ingreso',
                         value:
-                            docente.modalidadIngresoNombre?.isNotEmpty == true
-                                ? docente.modalidadIngresoNombre!
+                            widget.docente.modalidadIngresoNombre?.isNotEmpty ==
+                                    true
+                                ? widget.docente.modalidadIngresoNombre!
                                 : 'No especificado',
                         color: Color(0xff84cc16),
                       ),
@@ -281,8 +314,9 @@ class DesktopDetallesPanelWidget extends ConsumerWidget {
                         icon: Icons.work,
                         label: 'Experiencia Profesional',
                         value:
-                            docente.experienciaProfesional?.isNotEmpty == true
-                                ? docente.experienciaProfesional!
+                            widget.docente.experienciaProfesional?.isNotEmpty ==
+                                    true
+                                ? widget.docente.experienciaProfesional!
                                 : 'No especificado',
                         color: Color(0xffef4444),
                       ),
@@ -290,9 +324,11 @@ class DesktopDetallesPanelWidget extends ConsumerWidget {
                       _CompactInfoRow(
                         icon: Icons.school,
                         label: 'Experiencia Académica',
-                        value: docente.experienciaAcademica?.isNotEmpty == true
-                            ? docente.experienciaAcademica!
-                            : 'No especificado',
+                        value:
+                            widget.docente.experienciaAcademica?.isNotEmpty ==
+                                    true
+                                ? widget.docente.experienciaAcademica!
+                                : 'No especificado',
                         color: Color(0xff0891b2),
                       ),
                     ],

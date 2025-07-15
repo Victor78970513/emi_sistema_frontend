@@ -6,6 +6,8 @@ import '../../../../core/preferences/preferences.dart';
 import 'desasociar_docente_button.dart';
 import 'asociar_docente_dialog.dart';
 import 'ver_docente_info_button.dart';
+import '../../presentation/pages/asignatura_detalle_page.dart';
+import 'package:go_router/go_router.dart';
 
 class AsignaturaDetalleContent extends ConsumerWidget {
   final String asignaturaId;
@@ -107,6 +109,28 @@ class AsignaturaDetalleContent extends ConsumerWidget {
       data: (asignaturaDetalle) {
         print(
             'DEBUG: AsignaturaDetalleContent - Estado: DATA - ${asignaturaDetalle.materia}');
+
+        // Usar los nuevos providers para obtener IDs de navegación
+        final siguienteId = ref.watch(siguienteAsignaturaProvider((
+          token: token,
+          asignaturaId: asignaturaDetalle.id,
+          carreraId: asignaturaDetalle.carrera.id,
+        )));
+
+        final anteriorId = ref.watch(anteriorAsignaturaProvider((
+          token: token,
+          asignaturaId: asignaturaDetalle.id,
+          carreraId: asignaturaDetalle.carrera.id,
+        )));
+
+        final haySiguiente = siguienteId != null;
+        final hayAnterior = anteriorId != null;
+
+        print('DEBUG: ID actual: ${asignaturaDetalle.id}');
+        print('DEBUG: Carrera ID: ${asignaturaDetalle.carrera.id}');
+        print(
+            'DEBUG: Hay anterior: $hayAnterior, Hay siguiente: $haySiguiente');
+        print('DEBUG: Anterior ID: $anteriorId, Siguiente ID: $siguienteId');
         return SingleChildScrollView(
           padding: EdgeInsets.all(24),
           child: Column(
@@ -187,6 +211,7 @@ class AsignaturaDetalleContent extends ConsumerWidget {
               SizedBox(height: 24),
               // Docentes
               _buildDocentesSection(ref, token, context),
+              // Navegación entre asignaturas (eliminada, ahora en AppBar)
             ],
           ),
         );

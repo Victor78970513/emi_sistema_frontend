@@ -395,34 +395,19 @@ class StudiesPage extends ConsumerWidget {
   }
 
   void _showCreateStudyModal(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.9,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: _CreateStudyDialog(
-            onSuccess: () {
-              // Refrescar lista al guardar
-              final docenteState = ref.read(docenteProvider);
-              if (docenteState is DocenteSuccessState &&
-                  docenteState.docente != null) {
-                final docenteId = docenteState.docente!.docenteId;
-                ref
-                    .read(estudiosAcademicosProvider.notifier)
-                    .getEstudiosAcademicos(docenteId: docenteId);
-              }
-            },
-            showHandle: true),
-      ),
+      builder: (context) => _CreateStudyDialog(onSuccess: () {
+        // Refrescar lista al guardar
+        final docenteState = ref.read(docenteProvider);
+        if (docenteState is DocenteSuccessState &&
+            docenteState.docente != null) {
+          final docenteId = docenteState.docente!.docenteId;
+          ref
+              .read(estudiosAcademicosProvider.notifier)
+              .getEstudiosAcademicos(docenteId: docenteId);
+        }
+      }),
     );
   }
 }
@@ -843,8 +828,7 @@ class _DetailRow extends StatelessWidget {
 // --- Dialogo de creación ---
 class _CreateStudyDialog extends ConsumerStatefulWidget {
   final VoidCallback onSuccess;
-  final bool showHandle;
-  const _CreateStudyDialog({required this.onSuccess, this.showHandle = false});
+  const _CreateStudyDialog({required this.onSuccess});
 
   @override
   ConsumerState<_CreateStudyDialog> createState() => _CreateStudyDialogState();
@@ -858,14 +842,15 @@ class _CreateStudyDialogState extends ConsumerState<_CreateStudyDialog> {
   int? _gradoId;
   String? _pdfName;
   dynamic _pdfFile;
+  bool _intentoGuardar = false;
 
   @override
   void initState() {
     super.initState();
-    // Cargar datos
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(estudiosAcademicosFormProvider.notifier).fetchAllData();
-    });
+    // Ya no es necesario cargar datos aquí, se precargan en DocenteHomePage
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   ref.read(estudiosAcademicosFormProvider.notifier).fetchAllData();
+    // });
   }
 
   Future<void> _pickPDF() async {
@@ -882,19 +867,15 @@ class _CreateStudyDialogState extends ConsumerState<_CreateStudyDialog> {
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(estudiosAcademicosFormProvider);
-    final isDesktop = MediaQuery.of(context).size.width > 1024;
 
-    return Material(
-      color: Colors.transparent,
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: Container(
-        constraints: isDesktop
-            ? BoxConstraints(
-                maxWidth: 500,
-                maxHeight: MediaQuery.of(context).size.height * 0.9)
-            : null,
+        constraints: BoxConstraints(
+            maxWidth: 500, maxHeight: MediaQuery.of(context).size.height * 0.8),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(isDesktop ? 24 : 0),
+          borderRadius: BorderRadius.circular(24),
         ),
         child: formState.instituciones.isLoading || formState.grados.isLoading
             ? Container(
@@ -903,14 +884,23 @@ class _CreateStudyDialogState extends ConsumerState<_CreateStudyDialog> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      CircularProgressIndicator(
-                        color: Color(0xff2350ba),
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Color(0xff2350ba).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: CircularProgressIndicator(
+                          color: Color(0xff2350ba),
+                          strokeWidth: 3,
+                        ),
                       ),
                       SizedBox(height: 16),
                       Text(
                         'Cargando opciones...',
                         style: TextStyle(
                           fontSize: 16,
+                          fontWeight: FontWeight.w600,
                           color: Color(0xff2350ba),
                         ),
                       ),
@@ -923,38 +913,29 @@ class _CreateStudyDialogState extends ConsumerState<_CreateStudyDialog> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Handle para arrastrar (solo en móvil/tablet)
-                    if (widget.showHandle && !isDesktop)
-                      Container(
-                        margin: EdgeInsets.only(top: 12),
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    // Header elegante
+                    // Header con gradiente
                     Container(
-                      margin: EdgeInsets.all(20),
-                      padding: EdgeInsets.all(16),
+                      padding: EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
                             Color(0xff2350ba),
-                            Color(0xff1E40AF),
+                            Color(0xff1e40af),
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24),
+                        ),
                       ),
                       child: Row(
                         children: [
                           Container(
                             padding: EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
@@ -965,72 +946,93 @@ class _CreateStudyDialogState extends ConsumerState<_CreateStudyDialog> {
                           ),
                           SizedBox(width: 16),
                           Expanded(
-                            child: Text(
-                              'Nuevo Estudio Académico',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Nuevo Estudio Académico',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Agrega tu información académica',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white.withValues(alpha: 0.9),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            icon: Icon(Icons.close, color: Colors.white),
+                            style: IconButton.styleFrom(
+                              backgroundColor:
+                                  Colors.white.withValues(alpha: 0.2),
+                              shape: CircleBorder(),
                             ),
                           ),
                         ],
                       ),
                     ),
+
                     // Contenido del formulario
                     Flexible(
                       child: SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.all(24),
                         child: Column(
                           children: [
                             // Campo Título
-                            TextFormField(
+                            _buildModernFormField(
                               controller: _tituloController,
-                              decoration: InputDecoration(
-                                labelText: 'Título del Estudio',
-                                hintText: 'Ej: Ingeniería en Sistemas',
-                                border: OutlineInputBorder(),
-                              ),
+                              label: 'Título del Estudio',
+                              hint: 'Ej: Ingeniería en Sistemas',
+                              icon: Icons.school,
                               validator: (v) => v == null || v.trim().isEmpty
-                                  ? 'Campo requerido'
+                                  ? 'Campo obligatorio'
                                   : null,
                             ),
                             SizedBox(height: 20),
+
                             // Campo Institución
-                            DropdownButtonFormField<int>(
+                            _buildModernDropdownField(
                               value: _institucionId,
-                              decoration: InputDecoration(
-                                labelText: 'Institución',
-                                border: OutlineInputBorder(),
-                              ),
+                              label: 'Institución',
+                              hint: 'Selecciona una institución',
+                              icon: Icons.business,
                               items: formState.instituciones.when(
                                 data: (instituciones) => instituciones
                                     .map<DropdownMenuItem<int>>(
                                         (institucion) => DropdownMenuItem(
                                               value: institucion.id,
-                                              child: Text(institucion.nombre),
+                                              child: Text(
+                                                institucion.nombre,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
                                             ))
                                     .toList(),
                                 loading: () => [],
                                 error: (_, __) => [],
                               ),
-                              onChanged: (value) {
-                                setState(() {
-                                  _institucionId = value;
-                                });
-                              },
-                              validator: (value) => value == null
-                                  ? 'Selecciona una institución'
-                                  : null,
+                              onChanged: (v) =>
+                                  setState(() => _institucionId = v),
+                              validator: (v) =>
+                                  v == null ? 'Campo obligatorio' : null,
                             ),
                             SizedBox(height: 20),
+
                             // Campo Grado Académico
-                            DropdownButtonFormField<int>(
+                            _buildModernDropdownField(
                               value: _gradoId,
-                              decoration: InputDecoration(
-                                labelText: 'Grado Académico',
-                                border: OutlineInputBorder(),
-                              ),
+                              label: 'Grado Académico',
+                              hint: 'Selecciona un grado',
+                              icon: Icons.verified,
                               items: formState.grados.when(
                                 data: (grados) => grados
                                     .map<DropdownMenuItem<int>>(
@@ -1042,93 +1044,159 @@ class _CreateStudyDialogState extends ConsumerState<_CreateStudyDialog> {
                                 loading: () => [],
                                 error: (_, __) => [],
                               ),
-                              onChanged: (value) {
-                                setState(() {
-                                  _gradoId = value;
-                                });
-                              },
-                              validator: (value) =>
-                                  value == null ? 'Selecciona un grado' : null,
+                              onChanged: (v) => setState(() => _gradoId = v),
+                              validator: (v) =>
+                                  v == null ? 'Campo obligatorio' : null,
                             ),
                             SizedBox(height: 20),
+
                             // Campo Año
-                            TextFormField(
+                            _buildModernFormField(
                               controller: _anioController,
-                              decoration: InputDecoration(
-                                labelText: 'Año de Titulación',
-                                hintText: 'Ej: 2023',
-                                border: OutlineInputBorder(),
-                              ),
+                              label: 'Año de Titulación',
+                              hint: 'Ej: 2023',
+                              icon: Icons.calendar_today,
                               keyboardType: TextInputType.number,
                               validator: (v) {
                                 if (v == null || v.trim().isEmpty) {
-                                  return 'Campo requerido';
+                                  return 'Campo obligatorio';
                                 }
-                                final year = int.tryParse(v.trim());
-                                if (year == null ||
-                                    year < 1900 ||
-                                    year > DateTime.now().year) {
+                                final n = int.tryParse(v);
+                                if (n == null ||
+                                    n < 1900 ||
+                                    n > DateTime.now().year + 1) {
                                   return 'Año inválido';
                                 }
                                 return null;
                               },
                             ),
                             SizedBox(height: 20),
+
                             // Campo PDF
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: ListTile(
-                                leading: Icon(Icons.attach_file),
-                                title: Text(_pdfName ?? 'Seleccionar PDF'),
-                                subtitle: Text('Documento del estudio'),
-                                onTap: _pickPDF,
-                              ),
-                            ),
-                            if (_pdfFile == null) ...[
-                              SizedBox(height: 8),
-                              Text(
-                                'Selecciona un archivo PDF',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12,
+                            _buildModernFileField(),
+                            SizedBox(height: 20),
+
+                            // Mensaje de error
+                            if (formState.submitState
+                                is EstudiosAcademicosFormError) ...[
+                              Container(
+                                padding: EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Colors.red.withValues(alpha: 0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.error_outline,
+                                        color: Colors.red, size: 16),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        (formState.submitState
+                                                as EstudiosAcademicosFormError)
+                                            .message,
+                                        style: TextStyle(
+                                            color: Colors.red, fontSize: 14),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
+                              SizedBox(height: 16),
                             ],
                           ],
                         ),
                       ),
                     ),
+
                     // Botones de acción
                     Container(
-                      padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(24),
+                          bottomRight: Radius.circular(24),
+                        ),
+                      ),
                       child: Row(
                         children: [
                           Expanded(
-                            child: ElevatedButton.icon(
+                            child: OutlinedButton(
                               onPressed: () => Navigator.of(context).pop(),
-                              icon: Icon(Icons.cancel, color: Colors.white),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey,
-                                foregroundColor: Colors.white,
+                              style: OutlinedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(vertical: 16),
+                                side: BorderSide(color: Color(0xff2350ba)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
-                              label: Text('Cancelar'),
+                              child: Text(
+                                'Cancelar',
+                                style: TextStyle(
+                                  color: Color(0xff2350ba),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ),
                           ),
-                          SizedBox(width: 12),
+                          SizedBox(width: 16),
                           Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: _submit,
-                              icon: Icon(Icons.save, color: Colors.white),
+                            child: ElevatedButton(
+                              onPressed: formState.submitState
+                                      is EstudiosAcademicosFormLoading
+                                  ? null
+                                  : _submit,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xff2350ba),
                                 foregroundColor: Colors.white,
                                 padding: EdgeInsets.symmetric(vertical: 16),
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
-                              label: Text('Guardar'),
+                              child: formState.submitState
+                                      is EstudiosAcademicosFormLoading
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.white),
+                                          ),
+                                        ),
+                                        SizedBox(width: 12),
+                                        Text('Guardando...'),
+                                      ],
+                                    )
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.save,
+                                            size: 20, color: Colors.white),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'Guardar Estudio',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                             ),
                           ),
                         ],
@@ -1141,6 +1209,277 @@ class _CreateStudyDialogState extends ConsumerState<_CreateStudyDialog> {
     );
   }
 
+  Widget _buildModernFormField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Color(0xff2350ba).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                size: 16,
+                color: Color(0xff2350ba),
+              ),
+            ),
+            SizedBox(width: 12),
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 12),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 14,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Color(0xff2350ba), width: 2),
+            ),
+            filled: true,
+            fillColor: Colors.grey[50],
+            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          ),
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.black87,
+          ),
+          validator: (v) {
+            if (validator != null) {
+              final result = validator(v);
+              if (result != null) return result;
+            }
+            if (v == null || v.trim().isEmpty) {
+              return 'Campo obligatorio';
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModernDropdownField({
+    required int? value,
+    required String label,
+    required String hint,
+    required IconData icon,
+    required List<DropdownMenuItem<int>> items,
+    required Function(int?) onChanged,
+    required String? Function(int?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Color(0xff2350ba).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                size: 16,
+                color: Color(0xff2350ba),
+              ),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                  fontSize: 16,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(12),
+            color: Colors.grey[50],
+          ),
+          child: DropdownButtonFormField<int>(
+            value: value,
+            isExpanded: true,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 14,
+              ),
+            ),
+            items: items,
+            onChanged: onChanged,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+            dropdownColor: Colors.white,
+            validator: (v) {
+              if (validator != null) {
+                final result = validator(v);
+                if (result != null) return result;
+              }
+              if (v == null) {
+                return 'Campo obligatorio';
+              }
+              return null;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModernFileField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Color(0xff2350ba).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.attach_file,
+                size: 16,
+                color: Color(0xff2350ba),
+              ),
+            ),
+            SizedBox(width: 12),
+            Text(
+              'Documento PDF',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: _pdfName != null ? Colors.green : Colors.grey[300]!,
+              width: _pdfName != null ? 2 : 1,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            color: _pdfName != null
+                ? Colors.green.withValues(alpha: 0.05)
+                : Colors.grey[50],
+          ),
+          child: InkWell(
+            onTap: _pickPDF,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(
+                    _pdfName != null ? Icons.check_circle : Icons.upload_file,
+                    color: _pdfName != null ? Colors.green : Color(0xff2350ba),
+                    size: 24,
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _pdfName ?? 'Seleccionar archivo PDF',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: _pdfName != null
+                                ? Colors.green
+                                : Colors.black87,
+                          ),
+                        ),
+                        if (_pdfName != null) ...[
+                          SizedBox(height: 4),
+                          Text(
+                            'Archivo seleccionado correctamente',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ] else ...[
+                          SizedBox(height: 4),
+                          Text(
+                            'Haz clic para seleccionar un archivo PDF',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        if (_intentoGuardar && _pdfFile == null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, left: 4.0),
+            child: Text(
+              'Seleccionar un archivo PDF es obligatorio',
+              style: TextStyle(color: Colors.red, fontSize: 13),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   void dispose() {
     _tituloController.dispose();
@@ -1149,19 +1488,25 @@ class _CreateStudyDialogState extends ConsumerState<_CreateStudyDialog> {
   }
 
   Future<void> _submit() async {
+    // Validar todos los campos obligatorios
+    setState(() {
+      _intentoGuardar = true;
+    });
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid ||
+        _institucionId == null ||
+        _gradoId == null ||
+        _pdfFile == null) {
+      // El mensaje de PDF obligatorio se mostrará si falta
+      return;
+    }
+
     print('--- Enviando formulario de estudio académico ---');
     print('Título: ${_tituloController.text}');
     print('Institución: $_institucionId');
     print('Grado: $_gradoId');
     print('Año: ${_anioController.text}');
     print('PDF: $_pdfName');
-
-    if (!_formKey.currentState!.validate() ||
-        _institucionId == null ||
-        _gradoId == null ||
-        _pdfFile == null) {
-      return;
-    }
 
     try {
       await ref

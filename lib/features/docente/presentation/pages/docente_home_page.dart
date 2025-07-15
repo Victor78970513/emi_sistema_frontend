@@ -9,6 +9,7 @@ import 'package:frontend_emi_sistema/features/docente/presentation/providers/doc
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/carreras_asignadas_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/asignaturas_asignadas_provider.dart';
 import 'package:frontend_emi_sistema/features/docente/presentation/providers/asignaturas_disponibles_provider.dart';
+import 'package:frontend_emi_sistema/features/docente/presentation/providers/estudios_academicos_form_provider.dart';
 
 class DocenteHomePage extends ConsumerStatefulWidget {
   final Widget child;
@@ -28,6 +29,9 @@ class _DocenteHomePageState extends ConsumerState<DocenteHomePage> {
 
       // Cargar carreras y asignaturas asignadas
       await _loadCarrerasYAsignaturas();
+
+      // Precargar instituciones y grados académicos para el formulario de estudios
+      ref.read(estudiosAcademicosFormProvider.notifier).fetchAllData();
 
       // Esperar a que se cargue el docente y luego cargar estudios académicos
       await Future.delayed(Duration(milliseconds: 300));

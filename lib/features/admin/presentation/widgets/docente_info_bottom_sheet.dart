@@ -7,7 +7,7 @@ import '../../../docente/presentation/providers/estudios_academicos_provider.dar
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/constants.dart';
 
-class DocenteInfoBottomSheet extends ConsumerWidget {
+class DocenteInfoBottomSheet extends ConsumerStatefulWidget {
   final String docenteId;
   final String token;
 
@@ -18,9 +18,26 @@ class DocenteInfoBottomSheet extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DocenteInfoBottomSheet> createState() =>
+      _DocenteInfoBottomSheetState();
+}
+
+class _DocenteInfoBottomSheetState
+    extends ConsumerState<DocenteInfoBottomSheet> {
+  int? _lastDocenteId;
+
+  void _loadEstudios(int docenteId) {
+    _lastDocenteId = docenteId;
+    ref
+        .read(estudiosAcademicosProvider.notifier)
+        .getEstudiosAcademicos(docenteId: docenteId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final docenteDetalleAsync = ref.watch(
-      docenteDetalleProvider((token: token, docenteId: docenteId)),
+      docenteDetalleProvider(
+          (token: widget.token, docenteId: widget.docenteId)),
     );
 
     return Container(
@@ -32,7 +49,15 @@ class DocenteInfoBottomSheet extends ConsumerWidget {
         ),
       ),
       child: docenteDetalleAsync.when(
-        data: (docente) => _buildContent(context, docente, ref),
+        data: (docente) {
+          final docenteIdInt = int.parse(docente.data.docenteId);
+          if (_lastDocenteId != docenteIdInt) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _loadEstudios(docenteIdInt);
+            });
+          }
+          return _buildContent(context, docente, ref);
+        },
         loading: () => const Center(
           child: Padding(
             padding: EdgeInsets.all(20),
@@ -76,62 +101,11 @@ class DocenteInfoBottomSheet extends ConsumerWidget {
     final docente = docenteResponse.data;
     final isTablet = MediaQuery.of(context).size.width > 600;
 
-    // Cargar estudios académicos cuando se construye el widget
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(estudiosAcademicosProvider.notifier)
-          .getEstudiosAcademicos(docenteId: int.parse(docente.docenteId));
-    });
-
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.85,
       child: Column(
         children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xff2350ba).withValues(alpha: 0.05),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xff2350ba).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.person,
-                    color: const Color(0xff2350ba),
-                    size: isTablet ? 20 : 18,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Información Completa del Docente',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xff2350ba),
-                          fontSize: isTablet ? 18 : 16,
-                        ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: Icon(Icons.close, size: isTablet ? 20 : 18),
-                  color: Colors.grey[600],
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-              ],
-            ),
-          ),
+          // Header eliminado para evitar duplicidad visual
 
           // Barra de arrastre
           Container(
@@ -286,62 +260,71 @@ class DocenteInfoBottomSheet extends ConsumerWidget {
       BuildContext context, DocenteDetalleDataModel docente, bool isTablet) {
     return ListView(
       children: [
-        _buildInfoCard(
-          'Información Básica',
-          [
-            _buildInfoRow('Nombres', docente.nombres, Icons.person, isTablet),
-            _buildInfoRow(
-                'Apellidos', docente.apellidos, Icons.person, isTablet),
-            _buildInfoRow('Carnet de Identidad', docente.carnetIdentidad,
-                Icons.credit_card, isTablet),
-            _buildInfoRow('Género', docente.genero, Icons.wc, isTablet),
-            _buildInfoRow(
-                'Fecha de Nacimiento',
-                docente.fechaNacimiento?.toString().split(' ')[0],
-                Icons.calendar_today,
-                isTablet),
-          ],
-          isTablet,
-        ),
-        const SizedBox(height: 16),
-        _buildInfoCard(
-          'Información de Contacto',
-          [
-            _buildInfoRow('Correo Electrónico', docente.correoElectronico,
-                Icons.email, isTablet),
-            _buildInfoRow('Correo Usuario', docente.userCorreo,
-                Icons.email_outlined, isTablet),
-          ],
-          isTablet,
-        ),
-        const SizedBox(height: 16),
-        _buildInfoCard(
-          'Información Académica',
-          [
-            _buildInfoRow('Experiencia Profesional',
-                docente.experienciaProfesional, Icons.work, isTablet),
-            _buildInfoRow('Experiencia Académica', docente.experienciaAcademica,
-                Icons.school, isTablet),
-            _buildInfoRow('Categoría Docente', docente.categoriaNombre,
-                Icons.category, isTablet),
-            _buildInfoRow('Modalidad de Ingreso',
-                docente.modalidadIngresoNombre, Icons.input, isTablet),
-          ],
-          isTablet,
-        ),
-        const SizedBox(height: 16),
-        _buildInfoCard(
-          'Información del Sistema',
-          [
-            _buildInfoRow(
-                'Carrera', docente.carreraNombre, Icons.business, isTablet),
-            _buildInfoRow(
-                'Rol', docente.rolNombre, Icons.admin_panel_settings, isTablet),
-            _buildInfoRow('Estado', docente.estadoNombre, Icons.info, isTablet),
-            _buildInfoRow('Usuario ID', docente.usuarioId, Icons.account_circle,
-                isTablet),
-          ],
-          isTablet,
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 12,
+                offset: Offset(0, 4),
+              ),
+            ],
+            border: Border.all(
+                color: Color(0xff2350ba).withOpacity(0.08), width: 1),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Color(0xff2350ba).withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child:
+                        Icon(Icons.person, color: Color(0xff2350ba), size: 28),
+                  ),
+                  SizedBox(width: 16),
+                  Text(
+                    'Información del Docente',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff2350ba),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 24),
+              _buildInfoRow('Nombres', docente.nombres, Icons.person, isTablet),
+              _buildInfoRow(
+                  'Apellidos', docente.apellidos, Icons.person, isTablet),
+              _buildInfoRow('Carnet de Identidad', docente.carnetIdentidad,
+                  Icons.credit_card, isTablet),
+              _buildInfoRow('Género', docente.genero, Icons.wc, isTablet),
+              _buildInfoRow(
+                  'Fecha de Nacimiento',
+                  docente.fechaNacimiento?.toString().split(' ')[0],
+                  Icons.calendar_today,
+                  isTablet),
+              _buildInfoRow('Correo Electrónico', docente.correoElectronico,
+                  Icons.email, isTablet),
+              _buildInfoRow('Experiencia Profesional',
+                  docente.experienciaProfesional, Icons.work, isTablet),
+              _buildInfoRow('Experiencia Académica',
+                  docente.experienciaAcademica, Icons.school, isTablet),
+              _buildInfoRow('Categoría Docente', docente.categoriaNombre,
+                  Icons.category, isTablet),
+              _buildInfoRow('Modalidad de Ingreso',
+                  docente.modalidadIngresoNombre, Icons.input, isTablet),
+            ],
+          ),
         ),
       ],
     );
@@ -414,39 +397,40 @@ class DocenteInfoBottomSheet extends ConsumerWidget {
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: const Color(0xff2350ba).withValues(alpha: 0.2),
+                color: const Color(0xff2350ba).withOpacity(0.10),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 4,
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: const Color(0xff2350ba).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
+                          color: const Color(0xff2350ba).withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
                           Icons.school,
                           color: const Color(0xff2350ba),
-                          size: isTablet ? 20 : 18,
+                          size: isTablet ? 28 : 22,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -454,80 +438,120 @@ class DocenteInfoBottomSheet extends ConsumerWidget {
                             Text(
                               estudio.titulo,
                               style: TextStyle(
-                                fontSize: isTablet ? 16 : 14,
+                                fontSize: isTablet ? 18 : 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.grey[800],
+                                color: const Color(0xff2350ba),
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${estudio.gradoAcademicoNombre} - ${estudio.institucionNombre}',
-                              style: TextStyle(
-                                fontSize: isTablet ? 14 : 12,
-                                color: Colors.grey[600],
-                              ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                Icon(Icons.workspace_premium,
+                                    size: 16, color: Colors.grey[600]),
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    estudio.gradoAcademicoNombre,
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 14 : 13,
+                                      color: Colors.grey[700],
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Icon(Icons.business,
+                                    size: 16, color: Colors.grey[600]),
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    estudio.institucionNombre,
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 14 : 13,
+                                      color: Colors.grey[700],
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   Row(
                     children: [
-                      _buildEstudioInfo(
-                          'Año',
-                          estudio.anioTitulacion.toString(),
-                          Icons.calendar_today,
-                          isTablet),
-                      const SizedBox(width: 16),
-                      _buildEstudioInfo('Institución',
-                          estudio.institucionNombre, Icons.business, isTablet),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  if (estudio.documentoUrl.isNotEmpty)
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                          try {
-                            final url =
-                                "${Constants.baseUrl}uploads/estudios_academicos/${estudio.documentoUrl}";
-                            if (await canLaunchUrl(Uri.parse(url))) {
-                              await launchUrl(Uri.parse(url),
-                                  mode: LaunchMode.externalApplication);
-                            } else {
+                      Icon(Icons.calendar_today,
+                          size: 16, color: Colors.grey[600]),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Año de titulación: ',
+                        style: TextStyle(
+                          fontSize: isTablet ? 13 : 12,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        estudio.anioTitulacion.toString(),
+                        style: TextStyle(
+                          fontSize: isTablet ? 14 : 13,
+                          color: Colors.grey[800],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      if (estudio.documentoUrl.isNotEmpty)
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            try {
+                              final url =
+                                  "${Constants.baseUrl}uploads/estudios_academicos/${estudio.documentoUrl}";
+                              if (await canLaunchUrl(Uri.parse(url))) {
+                                await launchUrl(Uri.parse(url),
+                                    mode: LaunchMode.externalApplication);
+                              } else {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'No se pudo abrir el documento')),
+                                  );
+                                }
+                              }
+                            } catch (e) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                       content: Text(
-                                          'No se pudo abrir el documento')),
+                                          'Error al acceder al documento')),
                                 );
                               }
                             }
-                          } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text('Error al acceder al documento')),
-                              );
-                            }
-                          }
-                        },
-                        icon: const Icon(Icons.visibility, size: 16),
-                        label: const Text('Ver Documento'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff2350ba),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                          },
+                          icon: const Icon(
+                            Icons.picture_as_pdf,
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                          label: const Text('Ver PDF'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xff2350ba),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            textStyle: TextStyle(
+                                fontSize: isTablet ? 13 : 12,
+                                fontWeight: FontWeight.w600),
                           ),
                         ),
-                      ),
-                    ),
+                    ],
+                  ),
                 ],
               ),
             ),

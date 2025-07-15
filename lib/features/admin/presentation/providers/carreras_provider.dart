@@ -192,3 +192,63 @@ final descargarReporteAsignaturasProvider =
   final carreraId = params['carreraId']!;
   return await repository.descargarReporteAsignaturas(token, carreraId);
 });
+
+// Provider para mantener lista ordenada de IDs de asignaturas por carrera
+final asignaturasIdsProvider =
+    FutureProvider.family<Map<String, List<String>>, String>(
+        (ref, token) async {
+  print('DEBUG: Obteniendo lista de IDs de asignaturas por carrera');
+  final repository = ref.read(carrerasRepositoryProvider);
+  final carreras = await repository.getCarreras(token);
+
+  Map<String, List<String>> asignaturasIdsPorCarrera = {};
+
+  for (var carrera in carreras) {
+    asignaturasIdsPorCarrera[carrera.id] =
+        carrera.asignaturas.map((a) => a.id).toList();
+    print(
+        'DEBUG: Carrera ${carrera.nombre}: ${carrera.asignaturas.length} asignaturas');
+  }
+
+  return asignaturasIdsPorCarrera;
+});
+
+// Provider para obtener el siguiente ID de asignatura
+final siguienteAsignaturaProvider = Provider.family<String?,
+    ({String token, String asignaturaId, String carreraId})>((ref, params) {
+  final asignaturasIdsAsync = ref.watch(asignaturasIdsProvider(params.token));
+
+  return asignaturasIdsAsync.when(
+    data: (asignaturasIdsPorCarrera) {
+      final asignaturasIds = asignaturasIdsPorCarrera[params.carreraId];
+      if (asignaturasIds == null) return null;
+
+      final idx = asignaturasIds.indexWhere((id) => id == params.asignaturaId);
+      if (idx == -1 || idx >= asignaturasIds.length - 1) return null;
+
+      return asignaturasIds[idx + 1];
+    },
+    loading: () => null,
+    error: (_, __) => null,
+  );
+});
+
+// Provider para obtener el ID anterior de asignatura
+final anteriorAsignaturaProvider = Provider.family<String?,
+    ({String token, String asignaturaId, String carreraId})>((ref, params) {
+  final asignaturasIdsAsync = ref.watch(asignaturasIdsProvider(params.token));
+
+  return asignaturasIdsAsync.when(
+    data: (asignaturasIdsPorCarrera) {
+      final asignaturasIds = asignaturasIdsPorCarrera[params.carreraId];
+      if (asignaturasIds == null) return null;
+
+      final idx = asignaturasIds.indexWhere((id) => id == params.asignaturaId);
+      if (idx <= 0) return null;
+
+      return asignaturasIds[idx - 1];
+    },
+    loading: () => null,
+    error: (_, __) => null,
+  );
+});
