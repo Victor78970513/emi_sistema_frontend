@@ -565,20 +565,8 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage>
                           ),
                         ),
                         SizedBox(height: 4),
-                        Text(
-                          'Solicitar asignación a una carrera específica',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14,
-                          ),
-                        ),
                       ],
                     ),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    color: Color(0xff2350ba),
-                    size: 16,
                   ),
                 ],
               ),
@@ -652,20 +640,8 @@ class _SubjectsCarrersPageState extends ConsumerState<SubjectsCarrersPage>
                           ),
                         ),
                         SizedBox(height: 4),
-                        Text(
-                          'Solicitar asignación a una asignatura específica',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14,
-                          ),
-                        ),
                       ],
                     ),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    color: Color(0xff2350ba),
-                    size: 16,
                   ),
                 ],
               ),

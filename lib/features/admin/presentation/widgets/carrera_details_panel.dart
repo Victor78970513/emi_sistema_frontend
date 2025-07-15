@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_emi_sistema/core/constants/constants.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../domain/entities/carrera.dart';
@@ -204,7 +205,7 @@ class _CarreraDetailsPanelState extends State<CarreraDetailsPanel> {
                           final scaffoldMessenger =
                               ScaffoldMessenger.of(context);
                           final url =
-                              'http://localhost:3000/api/admin/carreras/${widget.carrera.id}/asignaturas/pdf';
+                              '${Constants.baseUrl}api/admin/carreras/${widget.carrera.id}/asignaturas/pdf';
                           try {
                             await launchUrl(Uri.parse(url),
                                 mode: LaunchMode.externalApplication);

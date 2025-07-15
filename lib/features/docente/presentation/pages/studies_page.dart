@@ -395,54 +395,35 @@ class StudiesPage extends ConsumerWidget {
   }
 
   void _showCreateStudyModal(BuildContext context, WidgetRef ref) {
-    final isDesktop = MediaQuery.of(context).size.width > 1024;
-
-    if (isDesktop) {
-      // Usar Dialog para desktop
-      showDialog(
-        context: context,
-        builder: (context) => _CreateStudyDialog(onSuccess: () {
-          // Refrescar lista al guardar
-          final docenteState = ref.read(docenteProvider);
-          if (docenteState is DocenteSuccessState &&
-              docenteState.docente != null) {
-            final docenteId = docenteState.docente!.docenteId;
-            ref
-                .read(estudiosAcademicosProvider.notifier)
-                .getEstudiosAcademicos(docenteId: docenteId);
-          }
-        }),
-      );
-    } else {
-      // Usar BottomSheet para móvil/tablet
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (context) => Container(
-          height: MediaQuery.of(context).size.height * 0.9,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.9,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
-          clipBehavior: Clip.antiAlias,
-          child: _CreateStudyDialog(onSuccess: () {
-            // Refrescar lista al guardar
-            final docenteState = ref.read(docenteProvider);
-            if (docenteState is DocenteSuccessState &&
-                docenteState.docente != null) {
-              final docenteId = docenteState.docente!.docenteId;
-              ref
-                  .read(estudiosAcademicosProvider.notifier)
-                  .getEstudiosAcademicos(docenteId: docenteId);
-            }
-          }),
         ),
-      );
-    }
+        clipBehavior: Clip.antiAlias,
+        child: _CreateStudyDialog(
+            onSuccess: () {
+              // Refrescar lista al guardar
+              final docenteState = ref.read(docenteProvider);
+              if (docenteState is DocenteSuccessState &&
+                  docenteState.docente != null) {
+                final docenteId = docenteState.docente!.docenteId;
+                ref
+                    .read(estudiosAcademicosProvider.notifier)
+                    .getEstudiosAcademicos(docenteId: docenteId);
+              }
+            },
+            showHandle: true),
+      ),
+    );
   }
 }
 
@@ -862,7 +843,8 @@ class _DetailRow extends StatelessWidget {
 // --- Dialogo de creación ---
 class _CreateStudyDialog extends ConsumerStatefulWidget {
   final VoidCallback onSuccess;
-  const _CreateStudyDialog({required this.onSuccess});
+  final bool showHandle;
+  const _CreateStudyDialog({required this.onSuccess, this.showHandle = false});
 
   @override
   ConsumerState<_CreateStudyDialog> createState() => _CreateStudyDialogState();
@@ -880,23 +862,9 @@ class _CreateStudyDialogState extends ConsumerState<_CreateStudyDialog> {
   @override
   void initState() {
     super.initState();
-    // Cargar datos solo si no están cargados
+    // Cargar datos
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final formState = ref.read(estudiosAcademicosFormProvider);
-      final institucionesLoaded = formState.instituciones.when(
-        data: (_) => true,
-        loading: () => false,
-        error: (_, __) => false,
-      );
-      final gradosLoaded = formState.grados.when(
-        data: (_) => true,
-        loading: () => false,
-        error: (_, __) => false,
-      );
-
-      if (!institucionesLoaded && !gradosLoaded) {
-        ref.read(estudiosAcademicosFormProvider.notifier).fetchAllData();
-      }
+      ref.read(estudiosAcademicosFormProvider.notifier).fetchAllData();
     });
   }
 
@@ -916,616 +884,260 @@ class _CreateStudyDialogState extends ConsumerState<_CreateStudyDialog> {
     final formState = ref.watch(estudiosAcademicosFormProvider);
     final isDesktop = MediaQuery.of(context).size.width > 1024;
 
-    return Container(
-      constraints: isDesktop
-          ? BoxConstraints(
-              maxWidth: 500,
-              maxHeight: MediaQuery.of(context).size.height * 0.8)
-          : null,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(isDesktop ? 24 : 0),
-      ),
-      child: formState.instituciones.isLoading || formState.grados.isLoading
-          ? Container(
-              padding: EdgeInsets.all(40),
-              child: Center(
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        constraints: isDesktop
+            ? BoxConstraints(
+                maxWidth: 500,
+                maxHeight: MediaQuery.of(context).size.height * 0.9)
+            : null,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(isDesktop ? 24 : 0),
+        ),
+        child: formState.instituciones.isLoading || formState.grados.isLoading
+            ? Container(
+                padding: EdgeInsets.all(40),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Color(0xff2350ba),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Cargando opciones...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xff2350ba),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : Form(
+                key: _formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    // Handle para arrastrar (solo en móvil/tablet)
+                    if (widget.showHandle && !isDesktop)
+                      Container(
+                        margin: EdgeInsets.only(top: 12),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    // Header elegante
                     Container(
-                      padding: EdgeInsets.all(20),
+                      margin: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Color(0xff2350ba).withValues(alpha: 0.1),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xff2350ba),
+                            Color(0xff1E40AF),
+                          ],
+                        ),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: CircularProgressIndicator(
-                        color: Color(0xff2350ba),
-                        strokeWidth: 3,
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.school,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              'Nuevo Estudio Académico',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Cargando opciones...',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xff2350ba),
+                    // Contenido del formulario
+                    Flexible(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            // Campo Título
+                            TextFormField(
+                              controller: _tituloController,
+                              decoration: InputDecoration(
+                                labelText: 'Título del Estudio',
+                                hintText: 'Ej: Ingeniería en Sistemas',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (v) => v == null || v.trim().isEmpty
+                                  ? 'Campo requerido'
+                                  : null,
+                            ),
+                            SizedBox(height: 20),
+                            // Campo Institución
+                            DropdownButtonFormField<int>(
+                              value: _institucionId,
+                              decoration: InputDecoration(
+                                labelText: 'Institución',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: formState.instituciones.when(
+                                data: (instituciones) => instituciones
+                                    .map<DropdownMenuItem<int>>(
+                                        (institucion) => DropdownMenuItem(
+                                              value: institucion.id,
+                                              child: Text(institucion.nombre),
+                                            ))
+                                    .toList(),
+                                loading: () => [],
+                                error: (_, __) => [],
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  _institucionId = value;
+                                });
+                              },
+                              validator: (value) => value == null
+                                  ? 'Selecciona una institución'
+                                  : null,
+                            ),
+                            SizedBox(height: 20),
+                            // Campo Grado Académico
+                            DropdownButtonFormField<int>(
+                              value: _gradoId,
+                              decoration: InputDecoration(
+                                labelText: 'Grado Académico',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: formState.grados.when(
+                                data: (grados) => grados
+                                    .map<DropdownMenuItem<int>>(
+                                        (grado) => DropdownMenuItem(
+                                              value: grado.id,
+                                              child: Text(grado.nombre),
+                                            ))
+                                    .toList(),
+                                loading: () => [],
+                                error: (_, __) => [],
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  _gradoId = value;
+                                });
+                              },
+                              validator: (value) =>
+                                  value == null ? 'Selecciona un grado' : null,
+                            ),
+                            SizedBox(height: 20),
+                            // Campo Año
+                            TextFormField(
+                              controller: _anioController,
+                              decoration: InputDecoration(
+                                labelText: 'Año de Titulación',
+                                hintText: 'Ej: 2023',
+                                border: OutlineInputBorder(),
+                              ),
+                              keyboardType: TextInputType.number,
+                              validator: (v) {
+                                if (v == null || v.trim().isEmpty) {
+                                  return 'Campo requerido';
+                                }
+                                final year = int.tryParse(v.trim());
+                                if (year == null ||
+                                    year < 1900 ||
+                                    year > DateTime.now().year) {
+                                  return 'Año inválido';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            // Campo PDF
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: ListTile(
+                                leading: Icon(Icons.attach_file),
+                                title: Text(_pdfName ?? 'Seleccionar PDF'),
+                                subtitle: Text('Documento del estudio'),
+                                onTap: _pickPDF,
+                              ),
+                            ),
+                            if (_pdfFile == null) ...[
+                              SizedBox(height: 8),
+                              Text(
+                                'Selecciona un archivo PDF',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Botones de acción
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () => Navigator.of(context).pop(),
+                              icon: Icon(Icons.cancel, color: Colors.white),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey,
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                              ),
+                              label: Text('Cancelar'),
+                            ),
+                          ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: _submit,
+                              icon: Icon(Icons.save, color: Colors.white),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xff2350ba),
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                              ),
+                              label: Text('Guardar'),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            )
-          : Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Handle para arrastrar (solo en móvil/tablet)
-                  if (!isDesktop)
-                    Container(
-                      margin: EdgeInsets.only(top: 12),
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-
-                  // Header con gradiente
-                  Container(
-                    margin: EdgeInsets.all(20),
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xff2350ba),
-                          Color(0xff1E40AF),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(
-                            Icons.school,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            'Nuevo Estudio Académico',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Contenido del formulario
-                  Flexible(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        children: [
-                          // Campo Título
-                          _buildModernFormField(
-                            controller: _tituloController,
-                            label: 'Título del Estudio',
-                            hint: 'Ej: Ingeniería en Sistemas',
-                            icon: Icons.school,
-                            validator: (v) => v == null || v.trim().isEmpty
-                                ? 'Campo requerido'
-                                : null,
-                          ),
-                          SizedBox(height: 20),
-
-                          // Campo Institución
-                          _buildModernDropdownField(
-                            value: _institucionId,
-                            label: 'Institución',
-                            hint: 'Selecciona una institución',
-                            icon: Icons.business,
-                            items: formState.instituciones.when(
-                              data: (instituciones) => instituciones
-                                  .map<DropdownMenuItem<int>>(
-                                      (institucion) => DropdownMenuItem(
-                                            value: institucion.id,
-                                            child: Text(
-                                              institucion.nombre,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ))
-                                  .toList(),
-                              loading: () => [],
-                              error: (_, __) => [],
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                _institucionId = value;
-                              });
-                            },
-                            validator: (value) => value == null
-                                ? 'Selecciona una institución'
-                                : null,
-                          ),
-                          SizedBox(height: 20),
-
-                          // Campo Grado Académico
-                          _buildModernDropdownField(
-                            value: _gradoId,
-                            label: 'Grado Académico',
-                            hint: 'Selecciona un grado',
-                            icon: Icons.school,
-                            items: formState.grados.when(
-                              data: (grados) => grados
-                                  .map<DropdownMenuItem<int>>(
-                                      (grado) => DropdownMenuItem(
-                                            value: grado.id,
-                                            child: Text(
-                                              grado.nombre,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ))
-                                  .toList(),
-                              loading: () => [],
-                              error: (_, __) => [],
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                _gradoId = value;
-                              });
-                            },
-                            validator: (value) =>
-                                value == null ? 'Selecciona un grado' : null,
-                          ),
-                          SizedBox(height: 20),
-
-                          // Campo Año
-                          _buildModernFormField(
-                            controller: _anioController,
-                            label: 'Año de Titulación',
-                            hint: 'Ej: 2023',
-                            icon: Icons.calendar_today,
-                            keyboardType: TextInputType.number,
-                            validator: (v) {
-                              if (v == null || v.trim().isEmpty) {
-                                return 'Campo requerido';
-                              }
-                              final year = int.tryParse(v.trim());
-                              if (year == null ||
-                                  year < 1900 ||
-                                  year > DateTime.now().year) {
-                                return 'Año inválido';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 20),
-
-                          // Campo PDF
-                          _buildModernFileField(
-                            label: 'Documento PDF',
-                            hint: 'Selecciona un archivo PDF',
-                            icon: Icons.attach_file,
-                            fileName: _pdfName,
-                            onTap: _pickPDF,
-                            validator: (value) => _pdfFile == null
-                                ? 'Selecciona un archivo PDF'
-                                : null,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Botones de acción
-                  Container(
-                    margin: EdgeInsets.all(20),
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Color(0xff2350ba).withValues(alpha: 0.2),
-                        width: 1,
-                      ),
-                    ),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isMobile = constraints.maxWidth < 600;
-
-                        if (isMobile) {
-                          // Layout en columna para móvil/tablet
-                          return Column(
-                            children: [
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  onPressed: _submit,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xff2350ba),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(vertical: 16),
-                                    elevation: 2,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.save,
-                                          size: 20, color: Colors.white),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        'Guardar Estudio',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 12),
-                              SizedBox(
-                                width: double.infinity,
-                                child: OutlinedButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  style: OutlinedButton.styleFrom(
-                                    padding: EdgeInsets.symmetric(vertical: 16),
-                                    side: BorderSide(color: Color(0xff2350ba)),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Cancelar',
-                                    style: TextStyle(
-                                      color: Color(0xff2350ba),
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        } else {
-                          // Layout en fila para desktop
-                          return Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  style: OutlinedButton.styleFrom(
-                                    padding: EdgeInsets.symmetric(vertical: 16),
-                                    side: BorderSide(color: Color(0xff2350ba)),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Cancelar',
-                                    style: TextStyle(
-                                      color: Color(0xff2350ba),
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 16),
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: _submit,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xff2350ba),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(vertical: 16),
-                                    elevation: 2,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.save,
-                                          size: 20, color: Colors.white),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        'Guardar Estudio',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-    );
-  }
-
-  Widget _buildModernFormField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    TextInputType? keyboardType,
-    String? Function(String?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Color(0xff2350ba).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                icon,
-                size: 16,
-                color: Color(0xff2350ba),
-              ),
-            ),
-            SizedBox(width: 12),
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 12),
-        TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 14,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Color(0xff2350ba), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey[50],
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          ),
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-          ),
-          validator: validator,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildModernDropdownField({
-    required int? value,
-    required String label,
-    required String hint,
-    required IconData icon,
-    required List<DropdownMenuItem<int>> items,
-    required Function(int?) onChanged,
-    required String? Function(int?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Color(0xff2350ba).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                icon,
-                size: 16,
-                color: Color(0xff2350ba),
-              ),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                  fontSize: 16,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.grey[50],
-          ),
-          child: DropdownButtonFormField<int>(
-            value: value,
-            isExpanded: true,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              hintText: hint,
-              hintStyle: TextStyle(
-                color: Colors.grey[400],
-                fontSize: 14,
-              ),
-            ),
-            items: items,
-            onChanged: onChanged,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
-            ),
-            dropdownColor: Colors.white,
-            validator: validator,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildModernFileField({
-    required String label,
-    required String hint,
-    required IconData icon,
-    String? fileName,
-    VoidCallback? onTap,
-    String? Function(String?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Color(0xff2350ba).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                icon,
-                size: 16,
-                color: Color(0xff2350ba),
-              ),
-            ),
-            SizedBox(width: 12),
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: fileName != null ? Colors.green : Colors.grey[300]!,
-              width: fileName != null ? 2 : 1,
-            ),
-            borderRadius: BorderRadius.circular(12),
-            color: fileName != null
-                ? Colors.green.withValues(alpha: 0.05)
-                : Colors.grey[50],
-          ),
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(12),
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(
-                    fileName != null ? Icons.check_circle : Icons.upload_file,
-                    color: fileName != null ? Colors.green : Color(0xff2350ba),
-                    size: 24,
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          fileName ?? hint,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: fileName != null
-                                ? Colors.green
-                                : Colors.black87,
-                          ),
-                        ),
-                        if (fileName != null) ...[
-                          SizedBox(height: 4),
-                          Text(
-                            'Archivo seleccionado correctamente',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ] else ...[
-                          SizedBox(height: 4),
-                          Text(
-                            hint,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
