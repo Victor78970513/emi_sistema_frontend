@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/docente_detalle_response_model.dart';
 import '../providers/carreras_provider.dart';
-import '../../../docente/data/models/estudio_academico_model.dart';
 import '../../../docente/presentation/providers/estudios_academicos_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/constants.dart';
@@ -268,13 +267,13 @@ class _DocenteInfoBottomSheetState
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 12,
                 offset: Offset(0, 4),
               ),
             ],
             border: Border.all(
-                color: Color(0xff2350ba).withOpacity(0.08), width: 1),
+                color: Color(0xff2350ba).withValues(alpha: 0.08), width: 1),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,7 +283,7 @@ class _DocenteInfoBottomSheetState
                   Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Color(0xff2350ba).withOpacity(0.08),
+                      color: Color(0xff2350ba).withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child:
@@ -399,12 +398,12 @@ class _DocenteInfoBottomSheetState
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: const Color(0xff2350ba).withOpacity(0.10),
+                color: const Color(0xff2350ba).withValues(alpha: 0.10),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -421,7 +420,8 @@ class _DocenteInfoBottomSheetState
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: const Color(0xff2350ba).withOpacity(0.08),
+                          color:
+                              const Color(0xff2350ba).withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(

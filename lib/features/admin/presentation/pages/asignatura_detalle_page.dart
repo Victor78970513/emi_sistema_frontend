@@ -54,7 +54,7 @@ class _AsignaturaDetallePageState extends ConsumerState<AsignaturaDetallePage> {
           automaticallyImplyLeading: true,
           elevation: 2,
           backgroundColor: Colors.white,
-          shadowColor: Colors.black.withOpacity(0.06),
+          shadowColor: Colors.black.withValues(alpha: 0.06),
           title: Row(
             children: [
               Icon(Icons.menu_book_rounded, color: Color(0xff2350ba), size: 28),

@@ -91,8 +91,8 @@ class DocenteDetalleDataModel {
       fechaNacimiento: json['fecha_nacimiento'] != null
           ? DateTime.parse(json['fecha_nacimiento'])
           : null,
-      experienciaProfesional: json['experiencia_profesional'],
-      experienciaAcademica: json['experiencia_academica'],
+      experienciaProfesional: (json['experiencia_profesional']).toString(),
+      experienciaAcademica: (json['experiencia_academica']).toString(),
       categoriaDocenteId: json['categoria_docente_id'],
       modalidadIngresoId: json['modalidad_ingreso_id'],
       usuarioId: json['usuario_id']?.toString() ?? '',

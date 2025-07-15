@@ -6,8 +6,6 @@ import '../../../../core/preferences/preferences.dart';
 import 'desasociar_docente_button.dart';
 import 'asociar_docente_dialog.dart';
 import 'ver_docente_info_button.dart';
-import '../../presentation/pages/asignatura_detalle_page.dart';
-import 'package:go_router/go_router.dart';
 
 class AsignaturaDetalleContent extends ConsumerWidget {
   final String asignaturaId;
