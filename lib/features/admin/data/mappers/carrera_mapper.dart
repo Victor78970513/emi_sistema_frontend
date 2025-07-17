@@ -16,6 +16,7 @@ class CarreraMapper {
           sem: asignaturaModel.sem,
           semestres: asignaturaModel.semestres,
           cargaHoraria: asignaturaModel.cargaHoraria,
+          carreraNombre: asignaturaModel.carreraNombre,
         );
       }).toList(),
     );

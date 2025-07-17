@@ -23,13 +23,16 @@ class DocenteInfoBottomSheet extends ConsumerStatefulWidget {
 
 class _DocenteInfoBottomSheetState
     extends ConsumerState<DocenteInfoBottomSheet> {
-  int? _lastDocenteId;
+  String? _lastDocenteId;
 
-  void _loadEstudios(int docenteId) {
+  void _loadEstudios(String docenteId) {
     _lastDocenteId = docenteId;
-    ref
-        .read(estudiosAcademicosProvider.notifier)
-        .getEstudiosAcademicos(docenteId: docenteId);
+    final docenteIdInt = int.tryParse(docenteId);
+    if (docenteIdInt != null) {
+      ref
+          .read(estudiosAcademicosProvider.notifier)
+          .getEstudiosAcademicos(docenteId: docenteIdInt);
+    }
   }
 
   @override
@@ -49,10 +52,10 @@ class _DocenteInfoBottomSheetState
       ),
       child: docenteDetalleAsync.when(
         data: (docente) {
-          final docenteIdInt = int.parse(docente.data.docenteId);
-          if (_lastDocenteId != docenteIdInt) {
+          final docenteIdStr = docente.data.docenteId;
+          if (_lastDocenteId != docenteIdStr) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              _loadEstudios(docenteIdInt);
+              _loadEstudios(docenteIdStr);
             });
           }
           return _buildContent(context, docente, ref);
@@ -129,20 +132,25 @@ class _DocenteInfoBottomSheetState
                       CircleAvatar(
                         radius: isTablet ? 35 : 30,
                         backgroundColor:
-                            const Color(0xff2350ba).withValues(alpha: 0.1),
-                        child: Text(
-                          (docente.nombres.isNotEmpty
-                                  ? docente.nombres[0]
-                                  : '') +
-                              (docente.apellidos.isNotEmpty
-                                  ? docente.apellidos[0]
-                                  : ''),
-                          style: TextStyle(
-                            fontSize: isTablet ? 22 : 20,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xff2350ba),
-                          ),
-                        ),
+                            const Color(0xff2350ba).withOpacity(0.1),
+                        backgroundImage: (docente.fotoDocente != null &&
+                                docente.fotoDocente!.isNotEmpty)
+                            ? NetworkImage(
+                                "${Constants.baseUrl}uploads/docentes/${docente.fotoDocente!}")
+                            : null,
+                        child: (docente.fotoDocente != null &&
+                                docente.fotoDocente!.isNotEmpty)
+                            ? null
+                            : Text(
+                                (docente.nombres.isNotEmpty
+                                    ? docente.nombres[0].toUpperCase()
+                                    : ''),
+                                style: TextStyle(
+                                  fontSize: isTablet ? 28 : 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xff2350ba),
+                                ),
+                              ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -314,10 +322,20 @@ class _DocenteInfoBottomSheetState
                   isTablet),
               _buildInfoRow('Correo Electrónico', docente.correoElectronico,
                   Icons.email, isTablet),
-              _buildInfoRow('Experiencia Profesional',
-                  docente.experienciaProfesional, Icons.work, isTablet),
-              _buildInfoRow('Experiencia Académica',
-                  docente.experienciaAcademica, Icons.school, isTablet),
+              _buildInfoRow(
+                  'Experiencia Profesional',
+                  docente.experienciaProfesional?.isNotEmpty == true
+                      ? docente.experienciaProfesional!
+                      : null,
+                  Icons.work,
+                  isTablet),
+              _buildInfoRow(
+                  'Experiencia Académica',
+                  docente.experienciaAcademica?.isNotEmpty == true
+                      ? docente.experienciaAcademica!
+                      : null,
+                  Icons.school,
+                  isTablet),
               _buildInfoRow('Categoría Docente', docente.categoriaNombre,
                   Icons.category, isTablet),
               _buildInfoRow('Modalidad de Ingreso',

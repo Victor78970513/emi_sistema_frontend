@@ -23,6 +23,25 @@ class AsociarDocenteDialog extends ConsumerStatefulWidget {
 class _AsociarDocenteDialogState extends ConsumerState<AsociarDocenteDialog> {
   bool _isLoading = false;
   Docente? _selectedDocente;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchText = '';
+  final FocusNode _searchFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    // Autoenfoque al abrir el diálogo
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _searchFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
 
   Future<void> _asociarDocente() async {
     if (_isLoading || _selectedDocente == null) return;
@@ -197,16 +216,25 @@ class _AsociarDocenteDialogState extends ConsumerState<AsociarDocenteDialog> {
               );
             }
 
+            // Filtrado de docentes según el texto de búsqueda
+            final filteredDocentes = _searchText.trim().isEmpty
+                ? docentes
+                : docentes.where((doc) {
+                    final nombreCompleto =
+                        '${doc.names} ${doc.surnames}'.toLowerCase();
+                    return nombreCompleto.contains(_searchText.toLowerCase());
+                  }).toList();
+
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Color(0xff2350ba).withValues(alpha: 0.05),
+                    color: Color(0xff2350ba).withOpacity(0.05),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Color(0xff2350ba).withValues(alpha: 0.2),
+                      color: Color(0xff2350ba).withOpacity(0.2),
                       width: 1,
                     ),
                   ),
@@ -231,85 +259,215 @@ class _AsociarDocenteDialogState extends ConsumerState<AsociarDocenteDialog> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16),
-                Container(
-                  height: 300,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey[300]!,
-                      width: 1,
+                SizedBox(height: 18),
+                // Buscador mejorado
+                Stack(
+                  alignment: Alignment.centerRight,
+                  children: [
+                    TextField(
+                      controller: _searchController,
+                      focusNode: _searchFocusNode,
+                      decoration: InputDecoration(
+                        hintText: 'Buscar por nombre o apellido',
+                        prefixIcon:
+                            Icon(Icons.search, color: Color(0xff2350ba)),
+                        suffixIcon: _searchText.isNotEmpty
+                            ? IconButton(
+                                icon:
+                                    Icon(Icons.clear, color: Colors.grey[500]),
+                                onPressed: () {
+                                  setState(() {
+                                    _searchText = '';
+                                    _searchController.clear();
+                                  });
+                                  _searchFocusNode.requestFocus();
+                                },
+                                tooltip: 'Limpiar búsqueda',
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Color(0xff2350ba).withOpacity(0.15),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Color(0xff2350ba).withOpacity(0.10),
+                          ),
+                        ),
+                      ),
+                      style: TextStyle(fontSize: 16),
+                      onChanged: (value) {
+                        setState(() {
+                          _searchText = value;
+                        });
+                      },
                     ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: ListView.builder(
-                    itemCount: docentes.length,
-                    itemBuilder: (context, index) {
-                      final docente = docentes[index] as Docente;
-                      final isSelected =
-                          _selectedDocente?.docenteId == docente.docenteId;
+                  ],
+                ),
+                SizedBox(height: 18),
+                AnimatedSwitcher(
+                  duration: Duration(milliseconds: 250),
+                  child: Container(
+                    key: ValueKey(
+                        filteredDocentes.length.toString() + _searchText),
+                    height: 300,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey[300]!,
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: filteredDocentes.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.search_off,
+                                    size: 48, color: Colors.grey[400]),
+                                SizedBox(height: 10),
+                                Text(
+                                  'No se encontraron docentes con ese nombre o apellido.',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 16,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: filteredDocentes.length,
+                            itemBuilder: (context, index) {
+                              final docente =
+                                  filteredDocentes[index] as Docente;
+                              final isSelected = _selectedDocente?.docenteId ==
+                                  docente.docenteId;
 
-                      return Container(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? Color(0xff2350ba).withValues(alpha: 0.1)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: isSelected
-                                ? Color(0xff2350ba)
-                                : Colors.transparent,
-                            width: 2,
+                              // Resaltar coincidencia en el nombre
+                              final nombreCompleto =
+                                  '${docente.names} ${docente.surnames}';
+                              final search = _searchText.trim();
+                              TextSpan buildHighlightedText(String text) {
+                                if (search.isEmpty) {
+                                  return TextSpan(
+                                      text: text,
+                                      style: TextStyle(
+                                          color: isSelected
+                                              ? Color(0xff2350ba)
+                                              : Colors.grey[800],
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16));
+                                }
+                                final lowerText = text.toLowerCase();
+                                final lowerSearch = search.toLowerCase();
+                                final start = lowerText.indexOf(lowerSearch);
+                                if (start == -1) {
+                                  return TextSpan(
+                                      text: text,
+                                      style: TextStyle(
+                                          color: isSelected
+                                              ? Color(0xff2350ba)
+                                              : Colors.grey[800],
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16));
+                                }
+                                return TextSpan(
+                                  children: [
+                                    TextSpan(
+                                        text: text.substring(0, start),
+                                        style: TextStyle(
+                                            color: isSelected
+                                                ? Color(0xff2350ba)
+                                                : Colors.grey[800],
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16)),
+                                    TextSpan(
+                                        text: text.substring(
+                                            start, start + search.length),
+                                        style: TextStyle(
+                                            backgroundColor: Color(0xff2350ba)
+                                                .withOpacity(0.18),
+                                            color: Color(0xff2350ba),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16)),
+                                    TextSpan(
+                                        text: text
+                                            .substring(start + search.length),
+                                        style: TextStyle(
+                                            color: isSelected
+                                                ? Color(0xff2350ba)
+                                                : Colors.grey[800],
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16)),
+                                  ],
+                                );
+                              }
+
+                              return Container(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? Color(0xff2350ba).withOpacity(0.08)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? Color(0xff2350ba)
+                                        : Colors.transparent,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor:
+                                        Color(0xff2350ba).withOpacity(0.15),
+                                    child: Text(
+                                      '${docente.names[0]}${docente.surnames[0]}',
+                                      style: TextStyle(
+                                        color: Color(0xff2350ba),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  title: RichText(
+                                    text: buildHighlightedText(nombreCompleto),
+                                  ),
+                                  subtitle: Text(
+                                    docente.correoElectronico ?? 'Sin correo',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: isSelected
+                                          ? Color(0xff2350ba).withOpacity(0.8)
+                                          : Colors.grey[600],
+                                    ),
+                                  ),
+                                  trailing: isSelected
+                                      ? Icon(
+                                          Icons.check_circle,
+                                          color: Color(0xff2350ba),
+                                          size: 24,
+                                        )
+                                      : null,
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedDocente = docente;
+                                    });
+                                  },
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor:
-                                Color(0xff2350ba).withValues(alpha: 0.15),
-                            child: Text(
-                              '${docente.names[0]}${docente.surnames[0]}',
-                              style: TextStyle(
-                                color: Color(0xff2350ba),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                          title: Text(
-                            '${docente.names} ${docente.surnames}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: isSelected
-                                  ? Color(0xff2350ba)
-                                  : Colors.grey[800],
-                            ),
-                          ),
-                          subtitle: Text(
-                            docente.correoElectronico ?? 'Sin correo',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: isSelected
-                                  ? Color(0xff2350ba).withValues(alpha: 0.8)
-                                  : Colors.grey[600],
-                            ),
-                          ),
-                          trailing: isSelected
-                              ? Icon(
-                                  Icons.check_circle,
-                                  color: Color(0xff2350ba),
-                                  size: 24,
-                                )
-                              : null,
-                          onTap: () {
-                            setState(() {
-                              _selectedDocente = docente;
-                            });
-                          },
-                        ),
-                      );
-                    },
                   ),
                 ),
               ],
@@ -338,7 +496,7 @@ class _AsociarDocenteDialogState extends ConsumerState<AsociarDocenteDialog> {
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Color(0xff2350ba).withValues(alpha: 0.3),
+                color: Color(0xff2350ba).withOpacity(0.3),
                 blurRadius: 4,
                 offset: Offset(0, 2),
               ),

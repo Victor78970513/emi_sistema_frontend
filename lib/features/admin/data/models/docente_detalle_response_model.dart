@@ -1,23 +1,37 @@
+import 'asignatura_model.dart';
+
 class DocenteDetalleResponseModel {
   final String message;
   final DocenteDetalleDataModel data;
+  final List<AsignaturaModel> asignaturas;
+  final double? totalHorasSemanales;
 
   DocenteDetalleResponseModel({
     required this.message,
     required this.data,
+    required this.asignaturas,
+    this.totalHorasSemanales,
   });
 
   factory DocenteDetalleResponseModel.fromJson(Map<String, dynamic> json) {
     return DocenteDetalleResponseModel(
       message: json['message'] ?? '',
-      data: DocenteDetalleDataModel.fromJson(json['data'] ?? {}),
+      data: DocenteDetalleDataModel.fromJson(json['docente'] ?? {}),
+      asignaturas: (json['asignaturas'] as List<dynamic>?)
+              ?.map((asignatura) => AsignaturaModel.fromJson(asignatura))
+              .toList() ??
+          [],
+      totalHorasSemanales: (json['total_horas_semanales'] as num?)?.toDouble(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'message': message,
-      'data': data.toJson(),
+      'docente': data.toJson(),
+      'asignaturas':
+          asignaturas.map((asignatura) => asignatura.toJson()).toList(),
+      'total_horas_semanales': totalHorasSemanales,
     };
   }
 }
@@ -91,8 +105,8 @@ class DocenteDetalleDataModel {
       fechaNacimiento: json['fecha_nacimiento'] != null
           ? DateTime.parse(json['fecha_nacimiento'])
           : null,
-      experienciaProfesional: (json['experiencia_profesional']).toString(),
-      experienciaAcademica: (json['experiencia_academica']).toString(),
+      experienciaProfesional: json['experiencia_profesional']?.toString(),
+      experienciaAcademica: json['experiencia_academica']?.toString(),
       categoriaDocenteId: json['categoria_docente_id'],
       modalidadIngresoId: json['modalidad_ingreso_id'],
       usuarioId: json['usuario_id']?.toString() ?? '',

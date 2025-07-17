@@ -6,6 +6,7 @@ class Asignatura {
   final int sem;
   final String semestres;
   final int cargaHoraria;
+  final String? carreraNombre;
 
   Asignatura({
     required this.id,
@@ -15,5 +16,6 @@ class Asignatura {
     required this.sem,
     required this.semestres,
     required this.cargaHoraria,
+    this.carreraNombre,
   });
 }

@@ -216,18 +216,7 @@ class CarrerasRemoteDataSourceImpl implements CarrerasRemoteDataSource {
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
         print('DEBUG: Datasource - JSON decodificado correctamente');
-
-        // Manejar tanto respuestas con wrapper como sin wrapper
-        if (jsonResponse.containsKey('data')) {
-          // Respuesta con wrapper
-          return DocenteDetalleResponseModel.fromJson(jsonResponse);
-        } else {
-          // Respuesta sin wrapper - crear un wrapper artificial
-          return DocenteDetalleResponseModel(
-            message: 'Detalles del docente obtenidos exitosamente',
-            data: DocenteDetalleDataModel.fromJson(jsonResponse),
-          );
-        }
+        return DocenteDetalleResponseModel.fromJson(jsonResponse);
       } else {
         print('DEBUG: Datasource - Error status code: ${response.statusCode}');
         throw Exception(
