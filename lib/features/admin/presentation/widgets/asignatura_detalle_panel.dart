@@ -683,7 +683,7 @@ class AsignaturaDetallePanel extends ConsumerWidget {
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Asignaturas que también imparte el docente',
+                    'Asignaturas que también imparte el docente3',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

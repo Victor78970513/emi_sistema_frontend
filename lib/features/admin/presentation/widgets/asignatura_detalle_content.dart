@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend_emi_sistema/core/constants/constants.dart';
+import 'package:frontend_emi_sistema/features/admin/presentation/widgets/evaluar_docente_asignatura.dart';
+import 'package:frontend_emi_sistema/features/docente/domain/entities/docente.dart';
 import '../../domain/entities/docente_asignatura.dart';
 import '../providers/carreras_provider.dart';
 import '../../../../core/preferences/preferences.dart';
@@ -10,10 +12,13 @@ import 'ver_docente_info_button.dart';
 
 class AsignaturaDetalleContent extends ConsumerWidget {
   final String asignaturaId;
+  final String docenteId;
 
   const AsignaturaDetalleContent({
     super.key,
     required this.asignaturaId,
+        required this.docenteId,
+
   });
 
   void _showAsociarDocenteDialog(BuildContext context) {
@@ -820,7 +825,7 @@ class AsignaturaDetalleContent extends ConsumerWidget {
                 Icon(Icons.book, color: Color(0xff2350ba)),
                 SizedBox(width: 8),
                 Text(
-                  'Asignaturas que también imparte el docente',
+                  'Asignaturas que también imparte el docente2',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -882,7 +887,7 @@ class AsignaturaDetalleContent extends ConsumerWidget {
                         ),
                       ]
                     : asignaturas
-                        .map((asignatura) => _buildAsignaturaItem(asignatura))
+                        .map((asignatura) => _buildAsignaturaItem(asignatura, Docente))
                         .toList(),
               ),
             ),
@@ -892,7 +897,7 @@ class AsignaturaDetalleContent extends ConsumerWidget {
     );
   }
 
-  Widget _buildAsignaturaItem(dynamic asignatura) {
+  Widget _buildAsignaturaItem(dynamic asignatura, dynamic docente) {
     return Container(
       margin: EdgeInsets.only(bottom: 8),
       padding: EdgeInsets.all(12),
@@ -953,6 +958,14 @@ class AsignaturaDetalleContent extends ConsumerWidget {
               _buildAsignaturaChip(
                   '${asignatura.horasSemanales?.toStringAsFixed(1) ?? 0} horas académicas',
                   Colors.orange),
+             EvaluarDocenteButton(
+                  docente: docente,
+                  asignaturaId: asignaturaId,
+                  onSuccess: () {
+                    // El provider se refrescará automáticamente
+                  },
+                ), 
+                
             ],
           ),
         ],
