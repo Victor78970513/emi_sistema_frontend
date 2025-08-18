@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend_emi_sistema/features/admin/data/models/docente_detalle_response_model.dart';
 import '../../domain/entities/docente_asignatura.dart';
 import '../providers/carreras_provider.dart';
 import '../../../../core/preferences/preferences.dart';
 
 class EvaluarDocenteButton extends ConsumerStatefulWidget {
-  final DocenteAsignatura docente;
+  final DocenteDetalleDataModel docente;
   final String asignaturaId;
   final VoidCallback? onSuccess;
 
@@ -21,8 +22,7 @@ class EvaluarDocenteButton extends ConsumerStatefulWidget {
       _EvaluarDocenteButtonState();
 }
 
-class _EvaluarDocenteButtonState
-    extends ConsumerState<EvaluarDocenteButton> {
+class _EvaluarDocenteButtonState extends ConsumerState<EvaluarDocenteButton> {
   bool _isLoading = false;
 
   Future<void> _desasociarDocente() async {
@@ -68,7 +68,7 @@ class _EvaluarDocenteButtonState
       await ref.read(desasociarDocenteProvider((
         token: token,
         asignaturaId: widget.asignaturaId,
-        docenteId: widget.docente.id,
+        docenteId: widget.docente.docenteId,
       )).future);
 
       // Mostrar mensaje de éxito

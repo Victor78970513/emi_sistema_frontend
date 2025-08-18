@@ -7,12 +7,12 @@ import 'package:go_router/go_router.dart';
 
 class AsignaturaDetallePage extends ConsumerStatefulWidget {
   final String asignaturaId;
-    final String docenteId;
+  // final String docenteId;
 
   const AsignaturaDetallePage({
     super.key,
     required this.asignaturaId,
-    required this.docenteId,
+    // required this.docenteId,
   });
 
   @override
@@ -118,8 +118,7 @@ class _AsignaturaDetallePageState extends ConsumerState<AsignaturaDetallePage> {
       ),
       body: AsignaturaDetalleContent(
         asignaturaId: widget.asignaturaId,
-        docenteId: widget.docenteId,
-
+        // docenteId: widget.docenteId,
       ),
     );
   }

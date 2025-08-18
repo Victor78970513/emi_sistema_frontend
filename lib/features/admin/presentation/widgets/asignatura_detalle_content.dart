@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend_emi_sistema/core/constants/constants.dart';
+import 'package:frontend_emi_sistema/features/admin/data/models/docente_detalle_response_model.dart';
 import 'package:frontend_emi_sistema/features/admin/presentation/widgets/evaluar_docente_asignatura.dart';
 import 'package:frontend_emi_sistema/features/docente/domain/entities/docente.dart';
 import '../../domain/entities/docente_asignatura.dart';
@@ -12,13 +13,12 @@ import 'ver_docente_info_button.dart';
 
 class AsignaturaDetalleContent extends ConsumerWidget {
   final String asignaturaId;
-  final String docenteId;
+  // final String docenteId;
 
   const AsignaturaDetalleContent({
     super.key,
     required this.asignaturaId,
-        required this.docenteId,
-
+    // required this.docenteId,
   });
 
   void _showAsociarDocenteDialog(BuildContext context) {
@@ -566,8 +566,12 @@ class AsignaturaDetalleContent extends ConsumerWidget {
     );
   }
 
-  Widget _buildDocenteCard(BuildContext context, DocenteAsignatura docente,
-      WidgetRef ref, String token) {
+  Widget _buildDocenteCard(
+    BuildContext context,
+    DocenteAsignatura docente,
+    WidgetRef ref,
+    String token,
+  ) {
     final isTablet = MediaQuery.of(context).size.width > 600;
 
     return Container(
@@ -887,7 +891,10 @@ class AsignaturaDetalleContent extends ConsumerWidget {
                         ),
                       ]
                     : asignaturas
-                        .map((asignatura) => _buildAsignaturaItem(asignatura, Docente))
+                        .map((asignatura) => _buildAsignaturaItem(
+                              asignatura,
+                              docenteDetalle.data,
+                            ))
                         .toList(),
               ),
             ),
@@ -897,7 +904,8 @@ class AsignaturaDetalleContent extends ConsumerWidget {
     );
   }
 
-  Widget _buildAsignaturaItem(dynamic asignatura, dynamic docente) {
+  Widget _buildAsignaturaItem(
+      dynamic asignatura, DocenteDetalleDataModel docente) {
     return Container(
       margin: EdgeInsets.only(bottom: 8),
       padding: EdgeInsets.all(12),
@@ -958,14 +966,13 @@ class AsignaturaDetalleContent extends ConsumerWidget {
               _buildAsignaturaChip(
                   '${asignatura.horasSemanales?.toStringAsFixed(1) ?? 0} horas académicas',
                   Colors.orange),
-             EvaluarDocenteButton(
-                  docente: docente,
-                  asignaturaId: asignaturaId,
-                  onSuccess: () {
-                    // El provider se refrescará automáticamente
-                  },
-                ), 
-                
+              EvaluarDocenteButton(
+                docente: docente,
+                asignaturaId: asignaturaId,
+                onSuccess: () {
+                  // El provider se refrescará automáticamente
+                },
+              ),
             ],
           ),
         ],
